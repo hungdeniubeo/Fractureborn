@@ -12,11 +12,19 @@ From a terminal:
 
 ```sh
 godot --path .
-godot --headless --path . --script tests/run_logic_tests.gd
 godot --headless --path . --editor --quit
+godot --headless --path . --script tests/run_logic_tests.gd
+godot --headless --path . --script tests/run_playable_flow.gd
+godot --headless --path . --script tests/run_playable_flow.gd -- reopen
+godot --path . --profiling --script tests/run_performance_profile.gd -- windowed
 ```
 
 Saves are stored under `user://characters/slot_1.json` through `slot_3.json`; graphics settings are stored in `user://settings.json`.
+The playable-flow runner uses `user://tests/flow_characters/slot_3.json`, so it does not write to normal character slots. Run its play phase before its reopen phase.
+
+## Play the slice
+
+Create or continue a Human character in one of the three slots. Speak to Archivist Edda in Central Village, then take the eastern gate into Green Plains. Defeat five common monsters, activate the Plains waystone, and fight the Goblin Captain followed by the Ancient Treant. Return through the western gate and speak to Edda for the quest reward. Open the pause menu with Esc to save and quit; use Continue in the same slot after restarting. The rune stones, hidden path, and chest are optional exploration on this route.
 
 ## Current slice
 
@@ -57,7 +65,7 @@ Each map owns a bounded projectile pool (12 warmed objects, at most 96). Project
 
 The F3 overlay is hidden unless explicitly enabled in a debug build. It reports FPS, nearby active enemies, active/total projectiles, gameplay-node count, process/physics time and static memory. Shared graphics settings include VSync, frame limit, fullscreen/window size, particles, shake, lighting, damage numbers and post-processing intensity; costly post-processing is off by default.
 
-Profile scenarios, durations, metrics, and current verification status are in [`docs/PERFORMANCE_PROFILE.md`](docs/PERFORMANCE_PROFILE.md). Godot is unavailable in this environment, so the 60 FPS target has not been measured.
+Profile scenarios, durations, metrics, and current verification status are in [`docs/PERFORMANCE_PROFILE.md`](docs/PERFORMANCE_PROFILE.md).
 
 ## Art handoff
 
@@ -65,10 +73,8 @@ Profile scenarios, durations, metrics, and current verification status are in [`
 
 ## Validation status
 
-Godot 4.7.2 was not installed in the implementation environment. The logic runner, editor import, manual gameplay flow, and profiler scenarios have not been executed here. Do not treat the performance target as verified until Godot profiler checks run on Windows and macOS at 1920×1080.
-
-The GDScript logic runner covers progression/level caps, cooldowns, party scaling, inventory bounds, save round-trip/migration, quest steps, waypoint activation and weighted loot. Godot 4.7.2 must be installed to execute that runner, import the project, or profile the required idle/exploration/enemy/boss scenarios. Do not treat the 60 FPS target as verified until those Godot profiler checks are run on Windows and macOS at 1920×1080.
+Godot 4.7.2 imported and launched the project on macOS. The logic runner passed its progression, cooldown, party scaling, inventory, save migration, quest, waypoint, loot, pool, and enemy activation checks. The playable-flow runner passed the complete quest/combat/respawn/save sequence and loaded the same saved character in a second Godot process. It uses mapped input actions for movement, attack, dodge, Q/E/R, 1/2, F, Tab, Esc, and health potion use; repeated boss attacks are accelerated by the runner. The macOS desktop session was locked during final checks, so a human-paced GUI playthrough and visual combat feel remain unverified. Windows, integrated graphics, and exact 1920×1080 performance also remain unverified.
 
 ## Next phase
 
-Install the requested Godot version and execute the end-to-end manual flow and profiler checklist in the brief. Fix any runtime/import or performance findings, then replace the highest-impact Human, enemy, boss, and world placeholders using the asset requests. Expand zone streaming and co-op only after the slice is measured.
+Run a human-paced balance and feel pass on an unlocked macOS or Windows desktop, then profile an integrated-graphics PC at 1920×1080. Replace the highest-impact Human, enemy, boss, and world placeholders using the asset requests before expanding maps, races, or co-op.
