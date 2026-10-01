@@ -1,0 +1,48 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+
+config/name="Fractureborn"
+run/main_scene="res://scenes/ui/save_select.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+GameSession="*res://scripts/core/game_session.gd"
+SaveService="*res://scripts/save/save_service.gd"
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[physics]
+
+2d/default_gravity=980.0
+2d/default_gravity_vector=Vector2(0, 1)
+2d/physics_ticks_per_second=60
+2d/max_physics_steps_per_frame=8
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=1
+textures/default_filters/use_nearest_mipmap_filter=false
+textures/default_filters/anisotropic_filtering_level=1
+environment/defaults/default_clear_color=Color(0.055, 0.075, 0.095, 1)
+
+[layer_names]
+
+2d_physics/layer_1="Player"
+2d_physics/layer_2="Enemies"
+2d_physics/layer_3="Player Projectiles"
+2d_physics/layer_4="Enemy Projectiles"
+2d_physics/layer_5="World"
+2d_physics/layer_6="Interactions"
+2d_physics/layer_7="Loot"
