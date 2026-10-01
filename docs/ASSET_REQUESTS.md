@@ -97,4 +97,3 @@ Frame size: `64x64` cells in a `256x128` atlas. Sword Art slash 6 frames; Weapon
 Style: opaque pixel clusters with transparent outer pixels, amber/teal palette, short lifetimes, small footprints. No full-screen glows or required real-time lights.
 
 Prompt: `Create a compact original 4x2 atlas of 64x64 pixel-art VFX cells for Fractureborn. Cells: a short amber directional sword crescent (6-frame sequence), a restrained teal weapon-focus flash (4), an amber-green battle-instinct ring (6), and a cool violet waystone activation pulse (8). Transparent background, crisp clusters, readable at small scale, no antialiasing, no huge bloom, no text, effects remain local to the character or waypoint.`
-

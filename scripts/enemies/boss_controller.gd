@@ -133,7 +133,7 @@ func _resolve_attack(target: Node2D) -> void:
 		if phase >= 3:
 			damage = int(round(damage * 1.3))
 		target.call("take_damage", damage, 0.0, telegraph_direction * 80.0)
-	
+
 
 func _update_phase() -> void:
 	if boss_id != &"ancient_treant":
