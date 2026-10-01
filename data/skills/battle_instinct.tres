@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SkillDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/skill_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+skill_id = &"battle_instinct"
+display_name = "Battle Instinct"
+description = "For 8 seconds, move faster, dodge sooner, and gain critical chance."
+cooldown = 40.0
+duration = 8.0
+activation_type = "buff"
+effect_move_speed = 1.32
+effect_dodge_cooldown = 0.55
+effect_crit_chance = 0.3

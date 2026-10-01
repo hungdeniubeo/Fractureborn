@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://data/loot/treant_bounty.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+enemy_id = &"ancient_treant"
+display_name = "Ancient Treant"
+max_hp = 1150
+move_speed = 49.0
+attack_damage = 24
+attack_cooldown = 2.2
+attack_range = 54.0
+ranged = false
+projectile_speed = 260.0
+xp_reward = 420
+gold_min = 80
+gold_max = 110
+stagger_resistance = 8.0
+stagger_threshold = 100.0
+stun_duration = 2.4
+phase_two_health_ratio = 0.6
+phase_three_health_ratio = 0.25
+visual_scale = 2.45
+body_color = Color(0.36, 0.51, 0.31, 1)
+loot_table = ExtResource("2")

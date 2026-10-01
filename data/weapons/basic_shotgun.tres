@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+weapon_id = &"basic_shotgun"
+display_name = "Basic Shotgun"
+weapon_class = "projectile"
+damage_bonus = 0
+attack_cooldown = 0.82
+attack_range = 88.0
+projectile_speed = 350.0
+projectile_count = 5
+projectile_spread_degrees = 26.0
+knockback = 88.0
+stagger = 13.0
+rarity = 1
+description = "A close-range burst that scatters pellets and staggers targets."

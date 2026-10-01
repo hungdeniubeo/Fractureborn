@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+weapon_id = &"wooden_bow"
+display_name = "Wooden Bow"
+weapon_class = "projectile"
+damage_bonus = 5
+attack_cooldown = 0.88
+attack_range = 165.0
+projectile_speed = 390.0
+projectile_count = 1
+projectile_spread_degrees = 0.0
+knockback = 24.0
+stagger = 8.0
+rarity = 0
+description = "A deliberate, accurate shot with comfortable reach."
