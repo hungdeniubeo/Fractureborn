@@ -107,7 +107,7 @@ func _refresh_slots() -> void:
 				layout.add_child(broken)
 				var retry := Button.new()
 				retry.text = "Unreadable save"
-			retry.disabled = true
+				retry.disabled = true
 				layout.add_child(retry)
 				continue
 			var details := Label.new()
@@ -156,7 +156,7 @@ func _load_slot(slot_index: int) -> void:
 
 func _start_character(slot_index: int, profile) -> void:
 	GameSession.begin_character(slot_index, profile)
-	var map_id := profile.current_map if ["village", "green_plains"].has(profile.current_map) else "village"
+	var map_id: String = profile.current_map if ["village", "green_plains"].has(profile.current_map) else "village"
 	profile.current_map = map_id
 	get_tree().change_scene_to_file("res://scenes/world/%s_world.tscn" % map_id)
 

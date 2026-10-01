@@ -25,5 +25,8 @@ func set_active(active: bool) -> void:
 
 
 func distance_squared_to(point: Vector2) -> float:
-	var nearest := bounds.get_closest_point(point)
+	var nearest := Vector2(
+		clampf(point.x, bounds.position.x, bounds.end.x),
+		clampf(point.y, bounds.position.y, bounds.end.y)
+	)
 	return nearest.distance_squared_to(point)

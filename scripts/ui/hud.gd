@@ -194,8 +194,8 @@ func _build_hotbar() -> void:
 	panel.add_child(row)
 	for index in range(4):
 		var label := _label("", 12)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.custom_minimum_size = Vector2(86, 38)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.custom_minimum_size = Vector2(86, 38)
 		_cooldown_labels.append(label)
 		_last_cooldown_text.append("")
 		row.add_child(label)
@@ -227,7 +227,7 @@ func _build_prompts() -> void:
 	_toast_text.visible = false
 	_root.add_child(_toast_text)
 	var inventory_hint := _label("Tab  Pack    ·    F  Interact    ·    Esc  Pause", 11)
-	inventory_hint.position = Vector2(696, 493)
+	inventory_hint.position = Vector2(610, 493)
 	inventory_hint.size = Vector2(248, 28)
 	inventory_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_root.add_child(inventory_hint)

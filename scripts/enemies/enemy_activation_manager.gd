@@ -5,13 +5,11 @@ const EnemyController = preload("res://scripts/enemies/enemy_controller.gd")
 
 @export var active_radius := 600.0
 @export var boss_active_radius := 300.0
-@export var activation_cell_size := 384.0
 @export var ai_update_interval := 0.2
 
 var player: Node2D
 var enemies: Array[EnemyController] = []
 var active_enemies: Array[EnemyController] = []
-var _last_player_cell := Vector2i(-999999, -999999)
 var _activation_timer: Timer
 var _ai_timer: Timer
 
@@ -19,7 +17,7 @@ var _ai_timer: Timer
 func _ready() -> void:
 	_activation_timer = Timer.new()
 	_activation_timer.wait_time = 0.4
-	_activation_timer.timeout.connect(_refresh_if_player_changed_cell)
+	_activation_timer.timeout.connect(refresh_activity)
 	add_child(_activation_timer)
 	_ai_timer = Timer.new()
 	_ai_timer.wait_time = ai_update_interval
@@ -54,13 +52,9 @@ func unregister_enemy(enemy: EnemyController) -> void:
 		_ai_timer.stop()
 
 
-func refresh_activity(force: bool = false) -> void:
+func refresh_activity(_force: bool = false) -> void:
 	if player == null:
 		return
-	var cell := Vector2i(floori(player.global_position.x / activation_cell_size), floori(player.global_position.y / activation_cell_size))
-	if not force and cell == _last_player_cell:
-		return
-	_last_player_cell = cell
 	for index in range(enemies.size() - 1, -1, -1):
 		var enemy := enemies[index]
 		if not is_instance_valid(enemy):
@@ -71,10 +65,6 @@ func refresh_activity(force: bool = false) -> void:
 	if enemies.is_empty():
 		_activation_timer.stop()
 		_ai_timer.stop()
-
-
-func _refresh_if_player_changed_cell() -> void:
-	refresh_activity()
 
 
 func _update_active_ai() -> void:

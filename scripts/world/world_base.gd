@@ -150,7 +150,11 @@ func _spawn_player() -> void:
 	player = PlayerController.new()
 	player.name = "Player"
 	player.configure(profile, self, enemy_manager, projectile_pool)
-	player.position = spawn_position
+	var saved_waypoint: Dictionary = WaypointManager.WAYPOINTS.get(profile.last_waypoint, {})
+	if profile.activated_waypoints.has(profile.last_waypoint) and saved_waypoint.get("map", "") == map_id:
+		player.position = saved_waypoint.position
+	else:
+		player.position = spawn_position
 	player.defeated.connect(_on_player_defeated)
 	player.stats_changed.connect(_on_player_stats_changed)
 	player.inventory_changed.connect(_on_inventory_changed)
@@ -159,6 +163,10 @@ func _spawn_player() -> void:
 	camera.name = "Camera2D"
 	camera.position_smoothing_enabled = true
 	camera.position_smoothing_speed = 7.0
+	camera.limit_left = 0
+	camera.limit_top = 0
+	camera.limit_right = map_size.x
+	camera.limit_bottom = map_size.y
 	camera.enabled = true
 	player.add_child(camera)
 	enemy_manager.configure(player)
@@ -269,8 +277,8 @@ func spawn_pickup(category: StringName, item_id: StringName, amount: int, positi
 	var pickup := LootPickup.new()
 	pickup.name = "Pickup_%s" % item_id
 	pickup.configure(category, item_id, amount)
-	add_child(pickup)
-	pickup.global_position = position
+	pickup.position = position
+	add_child.call_deferred(pickup)
 
 
 func _update_nearest_interactable() -> void:
@@ -297,7 +305,7 @@ func _interact() -> void:
 			_interact_quest_npc()
 		&"waypoint":
 			var waypoint_id := String(_nearest_interactable.interactable_id)
-			var was_activated := profile.activated_waypoints.has(waypoint_id)
+			var was_activated: bool = profile.activated_waypoints.has(waypoint_id)
 			waypoint_manager.use_waypoint(waypoint_id)
 			GameSession.request_message("Waypoint %s. Health restored." % ("activated" if not was_activated else "ready"))
 		&"travel":

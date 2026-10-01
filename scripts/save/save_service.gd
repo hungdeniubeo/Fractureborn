@@ -12,11 +12,12 @@ const SETTINGS_PATH := "user://settings.json"
 var _pending_profiles: Dictionary = {}
 var _save_timer: Timer
 var performance_settings: PerformanceSettings
+var save_directory := SAVE_DIRECTORY
 
 
 func _ready() -> void:
 	performance_settings = load_settings()
-	performance_settings.apply()
+	performance_settings.apply.call_deferred()
 	_save_timer = Timer.new()
 	_save_timer.one_shot = true
 	_save_timer.wait_time = 0.35
@@ -35,7 +36,7 @@ func save_now(slot_index: int, profile) -> bool:
 	if not _valid_slot(slot_index) or profile == null:
 		return false
 	_pending_profiles.erase(slot_index)
-	var directory_error := DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(SAVE_DIRECTORY))
+	var directory_error := DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(save_directory))
 	if directory_error != OK:
 		save_failed.emit(slot_index, "Could not create character save directory.")
 		return false
@@ -121,4 +122,4 @@ func _valid_slot(slot_index: int) -> bool:
 
 
 func _slot_path(slot_index: int) -> String:
-	return "%s/slot_%d.json" % [SAVE_DIRECTORY, slot_index]
+	return "%s/slot_%d.json" % [save_directory, slot_index]
