@@ -1,111 +1,160 @@
-# Fractureborn
+<div align="center">
 
-**Fractureborn** is an original top-down pixel-art action RPG built with Godot 4 and GDScript.
+# FRACTUREBORN
 
-The project is currently in early development. Its first playable vertical slice focuses on responsive combat, exploration, character progression, loot, quests, save/load support, boss encounters, and a lightweight architecture designed to scale beyond the prototype.
+### A top-down pixel-art action RPG built with Godot 4
 
-> Active development currently lives on [`feat/vertical-slice`](https://github.com/hungdeniubeo/Fractureborn/tree/feat/vertical-slice). The information below reflects that branch.
+Explore a fractured world, fight through hostile creatures, grow stronger through combat and loot, and face multi-phase boss encounters.
 
-## Project status
+[![Godot](https://img.shields.io/badge/Godot-4.7.2-478CBF?style=flat-square&logo=godot-engine&logoColor=white)](https://godotengine.org/)
+[![GDScript](https://img.shields.io/badge/Language-GDScript-478CBF?style=flat-square&logo=godot-engine&logoColor=white)](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/)
+[![Status](https://img.shields.io/badge/Status-Early%20Development-8A2BE2?style=flat-square)](#project-status)
+[![Branch](https://img.shields.io/badge/Active%20Branch-feat%2Fvertical--slice-24292F?style=flat-square&logo=github)](https://github.com/hungdeniubeo/Fractureborn/tree/feat/vertical-slice)
 
-**Phase 1 — Playable vertical slice**
+**Solo game project · Action RPG · Pixel art · Real-time combat**
 
-The current development build contains a complete small gameplay loop:
+[Overview](#overview) · [Features](#features) · [Controls](#controls) · [Run](#run-locally) · [Roadmap](#roadmap) · [Documentation](#documentation)
 
-1. Create or continue a Human character from one of three save slots.
-2. Speak with Archivist Edda in Central Village.
-3. Travel through the eastern gate into Green Plains.
-4. Fight common enemies and activate the Plains waystone.
-5. Defeat the Goblin Captain and Ancient Treant bosses.
-6. Collect and equip loot, including the Captain's guaranteed Iron Sword drop.
-7. Return to the village and complete the quest.
-8. Save, quit, and continue the same character later.
+</div>
 
-Optional exploration includes rune stones, a hidden path, and a chest.
+---
 
-## Current features
+## Overview
 
-### Combat
+**Fractureborn** is an original 2D top-down action RPG focused on responsive combat, exploration, progression, loot and boss encounters.
 
-- Real-time top-down movement and aiming.
-- Melee and ranged weapon support.
-- Dodge movement.
-- Human Sword Art, Weapon Focus, and Battle Instinct abilities with cooldowns.
-- Enemy melee and projectile attacks.
-- Boss encounters with multiple combat phases.
-- Death fade and waypoint-based respawning.
+The project is currently being developed as a focused playable vertical slice before expanding into a larger game. The goal of this phase is to build and validate the core gameplay foundation first: movement, combat, enemies, bosses, quests, inventory, progression, saving and performance.
 
-### Progression and equipment
+> **Development note**  
+> The playable game currently lives on [`feat/vertical-slice`](https://github.com/hungdeniubeo/Fractureborn/tree/feat/vertical-slice). The `main` branch is being kept lightweight while the vertical slice is actively developed.
 
-- Character progression up to level 50, tuned around the early-game slice.
-- Three separate versioned character save slots.
-- Gold, materials, weapons, health potions, and inventory management.
-- Training Sword, Iron Sword, Wooden Bow, Basic Pistol, and Basic Shotgun.
-- Weapon swapping and equipment support.
+## The current experience
 
-### World and enemies
+The vertical slice already contains a complete small gameplay loop:
 
-- Central Village and connected Green Plains maps.
-- TileMapLayer-based terrain and world layout.
-- Camps, obstacles, hidden exploration content, and return routes.
-- Slime, Goblin, Goblin Archer, and Goblin Captain enemies.
-- Three-phase Ancient Treant boss encounter.
-- Two healing and respawn waypoints.
+```text
+Create character
+      ↓
+Central Village
+      ↓
+Accept quest from Archivist Edda
+      ↓
+Explore Green Plains
+      ↓
+Fight enemies → gain loot → activate waypoint
+      ↓
+Goblin Captain
+      ↓
+Ancient Treant
+      ↓
+Return to village
+      ↓
+Complete quest → save → continue later
+```
 
-### Systems
+Along the way, the player can discover rune stones, a hidden path and an optional chest.
 
-- Saved quest progression.
-- Persistent character profiles and graphics settings.
-- Bounded projectile pooling.
-- Distance-based enemy activation and sleeping.
-- Chunk-aware world processing.
-- Signal-driven HUD updates.
-- Debug performance overlay.
-- Automated logic and playable-flow validation runners.
+## Features
+
+| Area | Current implementation |
+| --- | --- |
+| **Combat** | Real-time movement and aiming, melee/ranged attacks, dodge and three Human combat abilities |
+| **Enemies** | Slime, Goblin, Goblin Archer and Goblin Captain |
+| **Bosses** | Multi-phase Ancient Treant encounter |
+| **Weapons** | Training Sword, Iron Sword, Wooden Bow, Basic Pistol and Basic Shotgun |
+| **Progression** | Character leveling, loot, gold, materials, equipment and health potions |
+| **World** | Central Village, Green Plains, camps, obstacles, secrets and waypoints |
+| **Quests** | Persistent quest progression with saved state |
+| **Persistence** | Three versioned character save slots plus graphics settings |
+| **Performance** | Enemy sleeping, bounded projectile pooling, chunk-aware processing and signal-driven HUD updates |
+| **Testing** | Headless logic tests, playable-flow validation and performance profiling |
+
+### Combat abilities
+
+The current Human character has three cooldown-based abilities:
+
+- **Sword Art** — `Q`
+- **Weapon Focus** — `E`
+- **Battle Instinct** — `R`
+
+Skills currently do not consume mana or energy. The vertical slice is focused on timing, positioning and weapon usage rather than resource management.
 
 ## Controls
 
-| Action | Keyboard / mouse | Default controller action |
+| Action | Keyboard / mouse | Controller |
 | --- | --- | --- |
-| Move | WASD | Left stick |
+| Move | `WASD` | Left stick |
 | Aim | Mouse | Right stick |
 | Attack | Left mouse | Right trigger |
-| Dodge | Space | X / west face button |
-| Sword Art | Q | Left shoulder |
-| Weapon Focus | E | Right shoulder |
-| Battle Instinct | R | D-pad up |
-| Weapon slots | 1 / 2 | Configure in InputMap |
-| Interact | F | Y / north face button |
-| Pack and map | Tab | Back / View |
-| Health potion | H | A / south face button |
-| Pause | Esc | Start |
-| Performance overlay | F3 | Debug builds only |
+| Dodge | `Space` | West face button |
+| Sword Art | `Q` | Left shoulder |
+| Weapon Focus | `E` | Right shoulder |
+| Battle Instinct | `R` | D-pad up |
+| Weapon slots | `1` / `2` | InputMap |
+| Interact | `F` | North face button |
+| Pack / map | `Tab` | Back / View |
+| Health potion | `H` | South face button |
+| Pause | `Esc` | Start |
+| Performance overlay | `F3` | Debug builds only |
 
-Controller bindings are defined through Godot's InputMap and can be remapped. Human skills currently have no mana or energy cost.
+Controller mappings are defined through Godot's InputMap and can be remapped.
 
 ## Tech stack
 
-| Area | Technology |
-| --- | --- |
-| Engine | Godot 4.7.x |
-| Language | GDScript |
-| Rendering | GL Compatibility |
-| Game type | 2D top-down action RPG |
-| Art direction | Pixel-art style |
-| Base viewport | 960 × 540 |
-| Physics | 60 ticks per second |
-| Persistence | Versioned JSON save data |
+<div align="center">
 
-The project currently uses runtime and pixel-art-style placeholder assets while the final art direction is being developed. No copyrighted game assets are used by the current vertical slice.
+| | |
+| --- | --- |
+| **Engine** | Godot 4.7.x |
+| **Language** | GDScript |
+| **Genre** | 2D top-down action RPG |
+| **Rendering** | GL Compatibility |
+| **Art direction** | Pixel-art style |
+| **Base viewport** | 960 × 540 |
+| **Physics** | 60 ticks / second |
+| **Persistence** | Versioned JSON |
+
+</div>
+
+The project currently uses original runtime and pixel-art-style placeholder assets while the final art direction is being developed. No copyrighted game assets are used by the current vertical slice.
+
+## Project status
+
+**Current phase: Playable Vertical Slice**
+
+The core gameplay loop is functional and automated validation is already in place. Current work is focused more on **feel, presentation and validation** than rapidly adding new content.
+
+### Working now
+
+- Character creation and three save slots
+- Village → plains → boss → return gameplay loop
+- Melee and ranged combat
+- Loot, equipment and inventory
+- Level progression
+- Quest persistence
+- Waypoint healing and respawn
+- Multi-phase boss logic
+- Save / quit / continue flow
+- Performance instrumentation
+- Automated gameplay validation
+
+### Still being refined
+
+- Enemy HP and combat feedback presentation
+- Human-paced combat balance and feel
+- Animation and visual polish
+- Final character, enemy, boss, world, UI and VFX art
+- Windows and integrated-graphics validation
+- Wider 1920×1080 performance testing
 
 ## Run locally
 
 ### Requirements
 
-- Godot 4.7.x. The current vertical slice was developed and validated with Godot 4.7.2 stable.
-- Git.
+- **Godot 4.7.x** — the current slice is validated with Godot **4.7.2 stable**
+- **Git**
 
-### Clone
+### Clone the active development build
 
 ```bash
 git clone https://github.com/hungdeniubeo/Fractureborn.git
@@ -113,17 +162,16 @@ cd Fractureborn
 git switch feat/vertical-slice
 ```
 
-Open `project.godot` in Godot and run the project with **F6/F5** or the editor Play button.
+Open `project.godot` in Godot and press **F6/F5** or use the editor Play button.
 
-From a terminal:
+Or launch from a terminal:
 
 ```bash
 godot --path .
 ```
 
-## Validation
-
-The project includes headless logic and playable-flow checks.
+<details>
+<summary><strong>Validation commands</strong></summary>
 
 ```bash
 godot --headless --path . --editor --quit
@@ -132,19 +180,17 @@ godot --headless --path . --script tests/run_playable_flow.gd
 godot --headless --path . --script tests/run_playable_flow.gd -- reopen
 ```
 
-For a rendered performance profile:
+Rendered performance profile:
 
 ```bash
 godot --path . --profiling --script tests/run_performance_profile.gd -- windowed
 ```
 
-The current macOS validation covers progression, cooldowns, inventory, save migration, quests, waypoints, loot, boss behavior, projectile pooling, enemy activation, combat damage, respawn, and save/reload flow.
-
-A rendered macOS profile maintained 60 FPS after warmup during the existing repeated-combat profile. Human-paced visual feel, Windows behavior, integrated-graphics performance, and exact 1920×1080 profiling still need broader manual validation.
+</details>
 
 ## Save data
 
-Normal character saves are stored under:
+Character profiles:
 
 ```text
 user://characters/slot_1.json
@@ -152,27 +198,30 @@ user://characters/slot_2.json
 user://characters/slot_3.json
 ```
 
-Graphics settings are stored in:
+Graphics settings:
 
 ```text
 user://settings.json
 ```
 
-The automated playable-flow runner uses its own test save path and does not overwrite the normal character slots.
+Automated playable-flow tests use a separate test save path and do not overwrite normal character slots.
 
-## Performance approach
+## Architecture and performance
 
-The vertical slice already includes several systems intended to keep runtime cost predictable as the project grows:
+The vertical slice is intentionally structured so the project can grow without making every object process every frame.
 
-- Shared atlas-backed TileMapLayer ground rendering.
-- Separate map scenes partitioned into logical chunks.
-- Distance-based sleeping for enemies and interactable objects.
-- Enemy decision ticks separated from movement physics.
-- Bounded projectile pools with maximum lifetime and travel range.
-- Signal-driven HUD updates instead of unnecessary continuous polling.
-- Debounced save requests with immediate saves for important progression events.
+Key runtime decisions include:
 
-Detailed profiling notes are available in [`docs/PERFORMANCE_PROFILE.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/PERFORMANCE_PROFILE.md).
+- Atlas-backed `TileMapLayer` terrain
+- Separate map scenes with logical chunk partitioning
+- Distance-based sleeping for enemies and interactables
+- Enemy AI decision ticks separated from movement physics
+- Bounded projectile pools with lifetime and travel limits
+- Signal-driven HUD updates
+- Debounced save requests with immediate saves for major progression events
+- Debug-only performance overlay
+
+A rendered macOS profile maintained **60 FPS after warmup** during the current repeated-combat profile. Broader hardware testing is still planned.
 
 ## Project structure
 
@@ -180,39 +229,52 @@ Detailed profiling notes are available in [`docs/PERFORMANCE_PROFILE.md`](https:
 Fractureborn/
 ├── assets/        # Characters, bosses, enemies, world, UI, weapons, VFX
 ├── data/          # Game data and configuration resources
-├── docs/          # Handoff, asset requests, profiling and design notes
+├── docs/          # Handoff, profiling, design and asset notes
 ├── scenes/        # Godot scenes and maps
 ├── scripts/       # Gameplay, systems, UI, save and core logic
-├── tests/         # Logic, playable-flow and performance runners
+├── tests/         # Logic, flow and performance runners
 ├── project.godot
 └── README.md
 ```
 
 ## Documentation
 
-- [`docs/PHASE1_HANDOFF.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/PHASE1_HANDOFF.md) — Phase 1 flow, requirement status, known limits, and review handoff.
-- [`docs/PERFORMANCE_PROFILE.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/PERFORMANCE_PROFILE.md) — performance scenarios, measurements, limits, and verification notes.
-- [`docs/ASSET_REQUESTS.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/ASSET_REQUESTS.md) — asset requirements, animation lists, dimensions, pivots, collision expectations, and art handoff notes.
+More detailed development notes live on the active branch:
+
+- [`PHASE1_HANDOFF.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/PHASE1_HANDOFF.md) — verified Phase 1 flow, requirement status and known limits
+- [`PERFORMANCE_PROFILE.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/PERFORMANCE_PROFILE.md) — profiling scenarios, measurements and verification notes
+- [`ASSET_REQUESTS.md`](https://github.com/hungdeniubeo/Fractureborn/blob/feat/vertical-slice/docs/ASSET_REQUESTS.md) — asset sizes, animation lists, pivots, collision expectations and art handoff notes
 
 ## Roadmap
 
-The immediate direction after the vertical slice is to strengthen the existing foundation before expanding scope:
+The next steps intentionally prioritize **polish before scope expansion**:
 
-- Complete a human-paced combat and balance pass.
-- Improve enemy and boss health/feedback presentation.
-- Validate the build on Windows and integrated graphics hardware.
-- Replace the highest-impact placeholder character, enemy, boss, world, UI, and VFX assets.
-- Continue improving animation and combat feel.
-- Expand maps, content, races, and larger systems only after the core loop is stable.
+- Improve enemy HP, hit feedback and combat readability
+- Complete a human-paced balance and feel pass
+- Improve animation, VFX and moment-to-moment responsiveness
+- Validate Windows and integrated-graphics performance
+- Replace high-impact placeholder art
+- Polish UI and world presentation
+- Expand maps, enemies, races and larger systems only after the core loop is stable
 
-The roadmap intentionally prioritizes polish and validation over adding large amounts of content too early.
+## Development philosophy
 
-## Contributing
+Fractureborn is being built **core-first**.
 
-Development is still early and the project is primarily being built as a focused game project. Bug reports and focused improvements are welcome.
+Instead of expanding the world immediately, the project aims to make a small section of the game genuinely playable, testable and performant first. New content can then build on a foundation that has already survived real gameplay, saving, combat and performance testing.
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, branch, validation, and contribution guidelines.
+---
+
+<div align="center">
+
+**Fractureborn is in active early development.**
+
+Built with Godot and GDScript.
+
+[View active development branch](https://github.com/hungdeniubeo/Fractureborn/tree/feat/vertical-slice)
+
+</div>
 
 ## License
 
-This repository does not currently include an explicit open-source license. Source code and project assets should not be assumed to be licensed for redistribution or reuse unless a license is added later.
+No explicit open-source license has been added yet. Source code and project assets should not be assumed to be licensed for redistribution or reuse unless a license is added later.
