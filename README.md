@@ -77,4 +77,6 @@ Godot 4.7.2 imported and launched the project on macOS. The logic runner passed 
 
 ## Next phase
 
+See [docs/PHASE1_HANDOFF.md](docs/PHASE1_HANDOFF.md) for the verified Phase 1 flow, requirement-by-requirement status, known limits, and review handoff.
+
 Run a human-paced balance and feel pass on an unlocked macOS or Windows desktop, then profile an integrated-graphics PC at 1920×1080. Replace the highest-impact Human, enemy, boss, and world placeholders using the asset requests before expanding maps, races, or co-op.
