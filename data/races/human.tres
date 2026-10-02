@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RaceDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/race_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+race_id = &"HUMAN"
+display_name = "Human"
+playable = true
+starting_max_hp = 100
+starting_damage = 10
+skill_ids = Array[StringName]([&"sword_art", &"weapon_focus", &"battle_instinct"])
+gameplay_identity = "A precise all-rounder who turns practiced weapon play into short, decisive power windows."

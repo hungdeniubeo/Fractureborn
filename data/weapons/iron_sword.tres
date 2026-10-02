@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+weapon_id = &"iron_sword"
+display_name = "Iron Sword"
+weapon_class = "melee"
+damage_bonus = 7
+attack_cooldown = 0.56
+attack_range = 64.0
+knockback = 76.0
+stagger = 15.0
+rarity = 1
+description = "A heavier edge that hits harder and breaks enemy poise."

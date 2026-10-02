@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/enemy_definition.gd" id="1"]
+[ext_resource type="Resource" path="res://data/loot/goblin_enemy.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+enemy_id = &"goblin_archer"
+display_name = "Goblin Archer"
+max_hp = 46
+move_speed = 56.0
+attack_damage = 9
+attack_cooldown = 1.55
+attack_range = 170.0
+ranged = true
+projectile_speed = 255.0
+xp_reward = 24
+gold_min = 2
+gold_max = 7
+stagger_resistance = 0.0
+visual_scale = 1.0
+body_color = Color(0.76, 0.48, 0.24, 1)
+loot_table = ExtResource("2")

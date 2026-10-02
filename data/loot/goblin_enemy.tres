@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="LootTable" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/loot/loot_table.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+entries = Array[Dictionary]([{"item_id": &"moss_fragment", "category": &"materials", "count": 1, "weight": 0.75}, {"item_id": &"iron_sword", "category": &"weapons", "count": 1, "weight": 0.06}, {"item_id": &"wooden_bow", "category": &"weapons", "count": 1, "weight": 0.08}, {"item_id": &"basic_pistol", "category": &"weapons", "count": 1, "weight": 0.04}, {"item_id": &"basic_shotgun", "category": &"weapons", "count": 1, "weight": 0.03}, {"item_id": &"health_potion", "category": &"consumables", "count": 1, "weight": 0.04}])

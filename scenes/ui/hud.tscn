@@ -1,0 +1,272 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/inventory_panel.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/debug_overlay.tscn" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.145, 0.204, 0.263, 1)
+border_color = Color(0.388, 0.482, 0.533, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
+bg_color = Color(0.208, 0.255, 0.294, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health"]
+bg_color = Color(0.78, 0.357, 0.408, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_experience"]
+bg_color = Color(0.412, 0.725, 0.812, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[node name="HUD" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1")
+
+[node name="Screen" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StatusPanel" type="PanelContainer" parent="Screen"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 14.0
+offset_right = 286.0
+offset_bottom = 116.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Stats" type="VBoxContainer" parent="Screen/StatusPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Top" type="HBoxContainer" parent="Screen/StatusPanel/Stats"]
+layout_mode = 2
+
+[node name="Level" type="Label" parent="Screen/StatusPanel/Stats/Top"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "LEVEL 1"
+
+[node name="HpText" type="Label" parent="Screen/StatusPanel/Stats/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+text = "HP 100 / 100"
+horizontal_alignment = 2
+
+[node name="HpBar" type="ProgressBar" parent="Screen/StatusPanel/Stats"]
+custom_minimum_size = Vector2(0, 13)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_health")
+
+[node name="ExpText" type="Label" parent="Screen/StatusPanel/Stats"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "EXP 0 / 54"
+
+[node name="ExpBar" type="ProgressBar" parent="Screen/StatusPanel/Stats"]
+custom_minimum_size = Vector2(0, 7)
+layout_mode = 2
+max_value = 54.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_experience")
+
+[node name="QuestPanel" type="PanelContainer" parent="Screen"]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 14.0
+offset_right = 944.0
+offset_bottom = 89.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="QuestText" type="Label" parent="Screen/QuestPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "TROUBLE IN GREEN PLAINS\nSpeak to Archivist Edda"
+autowrap_mode = 3
+
+[node name="BossPanel" type="PanelContainer" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 328.0
+offset_top = 16.0
+offset_right = 632.0
+offset_bottom = 78.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Content" type="VBoxContainer" parent="Screen/BossPanel"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="BossName" type="Label" parent="Screen/BossPanel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+
+[node name="Health" type="ProgressBar" parent="Screen/BossPanel/Content"]
+custom_minimum_size = Vector2(0, 13)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_health")
+
+[node name="Stagger" type="ProgressBar" parent="Screen/BossPanel/Content"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_experience")
+
+[node name="WeaponPanel" type="PanelContainer" parent="Screen"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 448.0
+offset_right = 266.0
+offset_bottom = 522.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Content" type="VBoxContainer" parent="Screen/WeaponPanel"]
+layout_mode = 2
+
+[node name="Weapon" type="Label" parent="Screen/WeaponPanel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Training Sword"
+
+[node name="Gold" type="Label" parent="Screen/WeaponPanel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "0 G"
+
+[node name="PotionButton" type="Button" parent="Screen/WeaponPanel/Content"]
+custom_minimum_size = Vector2(225, 30)
+layout_mode = 2
+text = "Health Potion ×0 [H]"
+
+[node name="HotbarPanel" type="PanelContainer" parent="Screen"]
+layout_mode = 0
+offset_left = 284.0
+offset_top = 460.0
+offset_right = 676.0
+offset_bottom = 522.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Hotbar" type="HBoxContainer" parent="Screen/HotbarPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SkillQ" type="Label" parent="Screen/HotbarPanel/Hotbar"]
+custom_minimum_size = Vector2(86, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Q Sword Art\nReady"
+horizontal_alignment = 1
+
+[node name="SkillE" type="Label" parent="Screen/HotbarPanel/Hotbar"]
+custom_minimum_size = Vector2(86, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "E Weapon Focus\nReady"
+horizontal_alignment = 1
+
+[node name="SkillR" type="Label" parent="Screen/HotbarPanel/Hotbar"]
+custom_minimum_size = Vector2(86, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "R Battle Instinct\nReady"
+horizontal_alignment = 1
+
+[node name="Dodge" type="Label" parent="Screen/HotbarPanel/Hotbar"]
+custom_minimum_size = Vector2(86, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Space Dodge\nReady"
+horizontal_alignment = 1
+
+[node name="Interaction" type="Label" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 345.0
+offset_top = 423.0
+offset_right = 615.0
+offset_bottom = 451.0
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="Toast" type="Label" parent="Screen"]
+visible = false
+layout_mode = 0
+offset_left = 180.0
+offset_top = 360.0
+offset_right = 780.0
+offset_bottom = 412.0
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="InventoryHint" type="Label" parent="Screen"]
+layout_mode = 0
+offset_left = 690.0
+offset_top = 493.0
+offset_right = 944.0
+offset_bottom = 521.0
+theme_override_font_sizes/font_size = 11
+text = "TAB PACK  ·  ESC PAUSE"
+horizontal_alignment = 2
+
+[node name="InventoryPanel" parent="Screen" instance=ExtResource("2")]
+layout_mode = 1
+
+[node name="PauseMenu" parent="Screen" instance=ExtResource("3")]
+layout_mode = 1
+
+[node name="DebugOverlay" parent="Screen" instance=ExtResource("4")]
+layout_mode = 1
+
+[node name="CooldownTimer" type="Timer" parent="."]
+wait_time = 0.1
+
+[node name="ToastTimer" type="Timer" parent="."]
+wait_time = 2.8
+one_shot = true

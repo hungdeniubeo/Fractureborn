@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SkillDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/skills/skill_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+skill_id = &"sword_art"
+display_name = "Sword Art"
+description = "A focused multi-target slash aimed toward the facing direction."
+cooldown = 6.0
+duration = 0.0
+activation_type = "strike"
+strike_damage_multiplier = 2.3
+strike_range = 88.0
+strike_stagger = 48.0
