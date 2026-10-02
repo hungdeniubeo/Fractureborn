@@ -8,6 +8,8 @@ signal boss_defeated(boss_id: StringName)
 
 const STAGGER_THRESHOLD := 100.0
 const STUN_DURATION_MS := 2400
+const ROOT_CLUSTER_SPACING := 64.0
+const ROOT_CLUSTER_RADIUS := 40.0
 
 var boss_id: StringName = &""
 var phase := 1
@@ -73,7 +75,7 @@ func take_damage(amount: int, stagger_amount: float = 0.0, knockback: Vector2 = 
 	state = State.HURT
 	_hurt_until_ms = Time.get_ticks_msec() + 100
 	health_changed.emit(health_current, health_maximum)
-	stagger_changed.emit(stagger, STAGGER_THRESHOLD)
+	stagger_changed.emit(stagger, stagger_threshold)
 	queue_redraw()
 	if health_current == 0:
 		boss_defeated.emit(boss_id)
@@ -92,12 +94,13 @@ func _begin_attack(target: Node2D) -> void:
 		else:
 			_captain_combo_remaining -= 1
 	else:
+		var pattern_roll := _rng.randf()
 		if phase == 1:
-			telegraph_kind = "root" if _rng.randf() < 0.55 else "slam"
+			telegraph_kind = "root" if pattern_roll < 0.55 else "slam"
 		elif phase == 2:
-			telegraph_kind = "root" if _rng.randf() < 0.68 else "slam"
+			telegraph_kind = "root_cluster" if pattern_roll < 0.32 else ("root" if pattern_roll < 0.72 else "slam")
 		else:
-			telegraph_kind = "root" if _rng.randf() < 0.6 else "slam"
+			telegraph_kind = "root_cluster" if pattern_roll < 0.42 else ("root" if pattern_roll < 0.72 else "slam")
 		if phase >= 2 and _summons_used < 2 and _rng.randf() < 0.4:
 			telegraph_kind = "summon"
 	telegraph_radius = (112.0 if phase >= 3 else 96.0) if boss_id == &"ancient_treant" else 42.0
@@ -121,6 +124,11 @@ func _resolve_attack(target: Node2D) -> void:
 	match kind:
 		"root":
 			hit = target.global_position.distance_to(telegraph_center) <= 52.0
+		"root_cluster":
+			for index in range(-1, 2):
+				if target.global_position.distance_squared_to(_root_cluster_center(index)) <= ROOT_CLUSTER_RADIUS * ROOT_CLUSTER_RADIUS:
+					hit = true
+					break
 		"slam":
 			hit = target.global_position.distance_to(global_position) <= telegraph_radius
 		"charge":
@@ -133,6 +141,13 @@ func _resolve_attack(target: Node2D) -> void:
 		if phase >= 3:
 			damage = int(round(damage * 1.3))
 		target.call("take_damage", damage, 0.0, telegraph_direction * 80.0)
+
+
+func _root_cluster_center(index: int) -> Vector2:
+	var axis := telegraph_direction.orthogonal()
+	if axis.is_zero_approx():
+		axis = Vector2.UP
+	return telegraph_center + axis * ROOT_CLUSTER_SPACING * float(index)
 
 
 func _update_phase() -> void:
@@ -161,9 +176,22 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2(-11, -19) * size, Vector2(22, 3) * size), Color("f3d695"))
 	if boss_id == &"ancient_treant" and phase >= 2:
 		draw_rect(Rect2(Vector2(-17, -13) * size, Vector2(34, 4) * size), Color("9abf71"))
-	if not telegraph_kind.is_empty():
-		var center := to_local(telegraph_center) if telegraph_kind == "root" else Vector2.ZERO
-		if telegraph_kind == "charge":
-			draw_line(Vector2.ZERO, telegraph_direction * 160.0, Color(1.0, 0.34, 0.25, 0.85), 4.0)
-		else:
-			draw_arc(center, telegraph_radius, 0.0, TAU, 28, Color(1.0, 0.36, 0.26, 0.8), 3.0)
+	if telegraph_kind.is_empty():
+		return
+	var warning_color := Color(1.0, 0.36, 0.26, 0.8)
+	match telegraph_kind:
+		"root":
+			draw_arc(to_local(telegraph_center), 52.0, 0.0, TAU, 28, warning_color, 3.0)
+		"root_cluster":
+			for index in range(-1, 2):
+				draw_arc(to_local(_root_cluster_center(index)), ROOT_CLUSTER_RADIUS, 0.0, TAU, 24, warning_color, 3.0)
+		"slam":
+			draw_arc(Vector2.ZERO, telegraph_radius, 0.0, TAU, 28, warning_color, 3.0)
+		"charge":
+			draw_line(Vector2.ZERO, telegraph_direction * 150.0, warning_color, 4.0)
+		"combo":
+			var angle := telegraph_direction.angle()
+			var half_arc := acos(0.6)
+			draw_arc(Vector2.ZERO, 72.0, angle - half_arc, angle + half_arc, 18, warning_color, 3.0)
+		"summon":
+			draw_arc(Vector2.ZERO, 65.0, 0.0, TAU, 24, Color(0.66, 0.82, 0.43, 0.85), 3.0)

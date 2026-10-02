@@ -9,12 +9,21 @@ const EnemyController = preload("res://scripts/enemies/enemy_controller.gd")
 const BossController = preload("res://scripts/enemies/boss_controller.gd")
 const InventoryModel = preload("res://scripts/inventory/inventory_model.gd")
 const LootTable = preload("res://scripts/loot/loot_table.gd")
+const LootService = preload("res://scripts/loot/loot_service.gd")
 const Progression = preload("res://scripts/core/progression.gd")
 const Projectile = preload("res://scripts/combat/projectile.gd")
 const ProjectilePool = preload("res://scripts/combat/projectile_pool.gd")
 const RaceData = preload("res://scripts/core/race_data.gd")
 const QuestTracker = preload("res://scripts/quests/quest_tracker.gd")
 const WaypointRegistry = preload("res://scripts/world/waypoint_registry.gd")
+
+
+class HitTarget extends Node2D:
+	var damage_received := 0
+
+	func take_damage(amount: int, _stagger: float = 0.0, _knockback: Vector2 = Vector2.ZERO) -> void:
+		damage_received += amount
+
 
 var _failures := 0
 
@@ -32,6 +41,8 @@ func _run_tests() -> void:
 	_test_quest_chain()
 	_test_waypoint_activation()
 	_test_deterministic_loot_selection()
+	_test_guaranteed_loot_selection()
+	_test_boss_stagger_and_phase_patterns()
 	_test_projectile_pool_reuses_and_expires_objects()
 	_test_enemy_activation_radius()
 	if _failures > 0:
@@ -144,6 +155,74 @@ func _test_deterministic_loot_selection() -> void:
 	var rng = RandomNumberGenerator.new()
 	rng.seed = 17
 	_expect(table.roll(rng) == "sunleaf")
+
+
+func _test_guaranteed_loot_selection() -> void:
+	var table = LootTable.new()
+	table.guaranteed_entries.append({"item_id": "iron_sword", "category": "weapons", "count": 1})
+	table.entries.append({"item_id": "moss_fragment", "category": "materials", "count": 2, "weight": 1.0})
+	var rng = RandomNumberGenerator.new()
+	rng.seed = 25
+	var drops: Array[Dictionary] = LootService.roll_drops(table, rng)
+	_expect(drops.size() == 2)
+	_expect(drops[0].get("item_id", "") == "iron_sword")
+	_expect(drops[1].get("item_id", "") == "moss_fragment")
+	var captain_table: LootTable = load("res://data/loot/captain_bounty.tres")
+	var captain_drops: Array[Dictionary] = LootService.roll_drops(captain_table, rng)
+	_expect(captain_drops.size() == 2 and captain_drops[0].get("item_id", "") == "iron_sword")
+
+
+func _test_boss_stagger_and_phase_patterns() -> void:
+	var target := HitTarget.new()
+	root.add_child(target)
+	var manager = EnemyActivationManager.new()
+	root.add_child(manager)
+	var captain = BossController.new()
+	captain.configure_boss(EnemyCatalog.get_definition(&"goblin_captain"), &"goblin_captain", target, null, manager)
+	root.add_child(captain)
+	var observed := {"maximum": 0.0}
+	captain.stagger_changed.connect(func(_current: float, maximum: float): observed.maximum = maximum)
+	captain.take_damage(1, 20.0)
+	_expect(float(observed.maximum) == captain.stagger_threshold)
+	captain.take_damage(1, captain.stagger_threshold)
+	captain.update_ai(target, 0.2)
+	_expect(captain._stunned_until_ms > Time.get_ticks_msec())
+	_expect(captain.stagger == 0.0)
+	var health_before_window: int = captain.health_current
+	captain.take_damage(20)
+	_expect(health_before_window - captain.health_current == 25)
+	var treant = BossController.new()
+	treant.configure_boss(EnemyCatalog.get_definition(&"ancient_treant"), &"ancient_treant", target, null, manager)
+	root.add_child(treant)
+	treant._rng.seed = 31
+	treant.health_current = int(treant.health_maximum * 0.55)
+	treant._update_phase()
+	_expect(treant.phase == 2)
+	var has_cluster := false
+	for index in range(80):
+		treant._begin_attack(target)
+		if treant.telegraph_kind == "root_cluster":
+			has_cluster = true
+			break
+	_expect(has_cluster)
+	treant.telegraph_center = Vector2(200, 200)
+	treant.telegraph_direction = Vector2.RIGHT
+	target.global_position = treant._root_cluster_center(-1)
+	treant.telegraph_kind = "root_cluster"
+	treant._resolve_attack(target)
+	_expect(target.damage_received > 0)
+	var damage_after_hit: int = target.damage_received
+	target.global_position = Vector2(320, 200)
+	treant.telegraph_kind = "root_cluster"
+	treant._resolve_attack(target)
+	_expect(target.damage_received == damage_after_hit)
+	treant.health_current = int(treant.health_maximum * 0.20)
+	treant._update_phase()
+	_expect(treant.phase == 3)
+	captain.queue_free()
+	treant.queue_free()
+	manager.queue_free()
+	target.queue_free()
 
 
 func _test_projectile_pool_reuses_and_expires_objects() -> void:

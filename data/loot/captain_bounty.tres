@@ -4,4 +4,5 @@
 
 [resource]
 script = ExtResource("1")
-entries = Array[Dictionary]([{"item_id": &"iron_sword", "category": &"weapons", "count": 1, "weight": 0.32}, {"item_id": &"wooden_bow", "category": &"weapons", "count": 1, "weight": 0.16}, {"item_id": &"basic_pistol", "category": &"weapons", "count": 1, "weight": 0.14}, {"item_id": &"basic_shotgun", "category": &"weapons", "count": 1, "weight": 0.14}, {"item_id": &"moss_fragment", "category": &"materials", "count": 5, "weight": 0.24}])
+entries = Array[Dictionary]([{"item_id": &"wooden_bow", "category": &"weapons", "count": 1, "weight": 0.16}, {"item_id": &"basic_pistol", "category": &"weapons", "count": 1, "weight": 0.14}, {"item_id": &"basic_shotgun", "category": &"weapons", "count": 1, "weight": 0.14}, {"item_id": &"moss_fragment", "category": &"materials", "count": 5, "weight": 0.24}])
+guaranteed_entries = Array[Dictionary]([{"item_id": &"iron_sword", "category": &"weapons", "count": 1}])

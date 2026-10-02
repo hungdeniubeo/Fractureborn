@@ -2,6 +2,7 @@ extends Resource
 class_name LootTable
 
 @export var entries: Array[Dictionary] = []
+@export var guaranteed_entries: Array[Dictionary] = []
 
 
 func roll(rng: RandomNumberGenerator) -> StringName:

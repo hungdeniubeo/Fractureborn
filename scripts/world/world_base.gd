@@ -388,12 +388,13 @@ func _on_enemy_died(enemy: EnemyController) -> void:
 	GameSession.add_experience(enemy.definition.xp_reward)
 	var gold := LootService.gold_amount(enemy.definition.gold_min, enemy.definition.gold_max, _rng)
 	spawn_pickup(&"gold", &"gold", gold, enemy.global_position + Vector2(-9, 4))
-	var drop := LootService.roll(enemy.definition.loot_table, _rng)
-	if not drop.is_empty():
+	var drop_index := 0
+	for drop in LootService.roll_drops(enemy.definition.loot_table, _rng):
 		var category := StringName(str(drop.get("category", "materials")))
 		var item_id := StringName(str(drop.get("item_id", "moss_fragment")))
 		var amount := maxi(1, int(drop.get("count", 1)))
-		spawn_pickup(category, item_id, amount, enemy.global_position + Vector2(10, -4))
+		spawn_pickup(category, item_id, amount, enemy.global_position + Vector2(10 + drop_index * 18, -4))
+		drop_index += 1
 	if enemy is BossController:
 		GameSession.quest_tracker.defeat_boss(String(enemy.boss_id))
 		profile.defeated_bosses.append(String(enemy.boss_id))

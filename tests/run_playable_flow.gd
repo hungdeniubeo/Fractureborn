@@ -116,6 +116,14 @@ func _play_flow() -> void:
 	_check(player.skills.cooldown_remaining(0) > 0.0 and player.skills.cooldown_remaining(1) > 0.0 and player.skills.cooldown_remaining(2) > 0.0, "all skill cooldowns run")
 	_check(player.combat_effects().attack_speed > 1.0 and player.movement_speed_multiplier() > 1.0, "skill buffs change combat")
 	player.dodge.advance(10.0)
+	var melee_attacker = _find_enemy(plains, &"goblin")
+	if _check(melee_attacker != null, "melee attacker exists"):
+		player.global_position = melee_attacker.global_position - Vector2(20, 0)
+		manager.refresh_activity(true)
+		melee_attacker._next_attack_ms = 0
+		var hp_before_enemy_attack: int = player.health.current
+		melee_attacker.update_ai(player, 0.2)
+		_check(player.health.current < hp_before_enemy_attack, "enemy melee attack damages the player")
 	var ranged_target = _find_enemy(plains, &"goblin_archer")
 	if _check(ranged_target != null, "ranged target exists"):
 		player.global_position = ranged_target.global_position - Vector2(70, 0)
@@ -156,6 +164,14 @@ func _play_flow() -> void:
 	var potions_before: int = int(plains.profile.inventory.consumables.health_potion)
 	await _press_for("quick_heal")
 	_check(player.health.current > hurt_hp and int(plains.profile.inventory.consumables.health_potion) == potions_before - 1, "potion heals and decreases quantity")
+	var captain_before_death = _find_enemy(plains, &"goblin_captain")
+	if not _check(captain_before_death != null, "Captain exists before death"):
+		return
+	player.global_position = captain_before_death.global_position - Vector2(45, 0)
+	plains._refresh_chunk_activity(true)
+	player.weapons.advance(10.0)
+	player.weapons.attack(Vector2.RIGHT, player.combat_effects())
+	_check(captain_before_death.health_current < captain_before_death.health_maximum, "boss takes damage before player death")
 	player.take_damage(9999)
 	_check(plains._respawning, "death starts respawn sequence")
 	await create_timer(0.75).timeout
@@ -172,6 +188,10 @@ func _play_flow() -> void:
 		return
 	_kill_with_sword(plains, captain)
 	_check(plains.profile.defeated_bosses.has("goblin_captain"), "Captain defeat is recorded")
+	await process_frame
+	await _collect_pickups(plains)
+	_check(int(plains.profile.inventory.weapons.get("iron_sword", 0)) >= 1, "Captain guarantees an Iron Sword pickup")
+	_check(player.equip_weapon(&"iron_sword"), "Captain weapon can be equipped")
 	var treant = _find_enemy(plains, &"ancient_treant")
 	if not _check(treant != null and treant.health_current == treant.health_maximum, "Ancient Treant spawns at full HP"):
 		return
@@ -220,6 +240,7 @@ func _verify_reopen() -> void:
 	_check(world.profile.completed_quests.has("trouble_in_green_plains"), "quest completion persists")
 	_check(world.profile.inventory.has("consumables"), "inventory persists")
 	_check(world.profile.equipped_weapon == &"wooden_bow" and world.player.weapons.current_weapon.weapon_id == &"wooden_bow", "equipped weapon persists")
+	_check(int(world.profile.inventory.weapons.get("iron_sword", 0)) >= 1 and str(world.profile.weapon_slots.get("1", "")) == "iron_sword", "Captain weapon persists")
 	_check(world.profile.opened_chests.has("plains_treasure") and bool(world.profile.puzzle_state.get("plains_runes_solved", false)), "puzzle and chest persist")
 
 
