@@ -3,6 +3,9 @@ extends SceneTree
 const TEST_SLOT := 3
 const TEST_NAME := "FlowTestHuman"
 const SAVE_SCENE := "res://scenes/ui/save_select.tscn"
+const PLAYER_SPAWN_OFFSET := Vector2(20, 0)
+const ENEMY_SPAWN_OFFSET := Vector2(24, 16)
+const WAYPOINT_OFFSET := Vector2(20, 12)
 
 var _failed := false
 
@@ -48,6 +51,7 @@ func _press_for(action: String, seconds: float = 0.05) -> void:
 
 
 func _play_flow() -> void:
+	node_added.connect(_shift_placed_markers)
 	var save_service := root.get_node("SaveService")
 	save_service.save_directory = "user://tests/flow_characters"
 	if save_service.has_slot(TEST_SLOT):
@@ -65,6 +69,8 @@ func _play_flow() -> void:
 	if not _check(village != null and village.map_id == "village" and village.player != null, "Human spawns in Central Village"):
 		return
 	var player = village.player
+	_check(village.player_spawn.position == Vector2(310, 420) + PLAYER_SPAWN_OFFSET, "test moves village PlayerSpawn before ready")
+	_check(player.global_position.distance_to(village.player_spawn.global_position) < 1.0, "moving village PlayerSpawn changes the actual spawn")
 	_check(player.get_node("Camera2D").limit_right == village.map_size.x, "village camera stays inside the map")
 	var start_x: float = player.global_position.x
 	Input.action_press("move_right")
@@ -87,6 +93,14 @@ func _play_flow() -> void:
 	player = plains.player
 	_check(player.get_node("Camera2D").limit_right == plains.map_size.x, "Plains camera stays inside the map")
 	var manager = plains.enemy_manager
+	var edited_enemy_spawn: Marker2D = plains.get_node("EnemySpawns/SlimeNearPath")
+	_check(edited_enemy_spawn.position == Vector2(308, 480) + ENEMY_SPAWN_OFFSET, "test moves enemy marker before ready")
+	var enemy_at_edited_spawn := false
+	for enemy in manager.enemies:
+		if enemy.definition.enemy_id == &"slime" and enemy.global_position.distance_to(edited_enemy_spawn.global_position) < 1.0:
+			enemy_at_edited_spawn = true
+	_check(enemy_at_edited_spawn, "moving an enemy spawn marker changes enemy placement")
+	_check(plains.find_interactable(&"plains_beacon").global_position == Vector2(500, 580) + WAYPOINT_OFFSET, "test moves waypoint before ready")
 	_check(manager.enemies.size() >= 9, "Green Plains enemies and bosses spawn")
 	await _press_for("weapon_2")
 	_check(plains.profile.equipped_weapon == &"wooden_bow", "2 switches to the bow")
@@ -102,12 +116,18 @@ func _play_flow() -> void:
 	var slime = _find_enemy(plains, &"slime")
 	if not _check(slime != null, "Slime exists"):
 		return
+	var slime_health: Control = slime.get_node_or_null("HealthBar")
+	if not _check(slime_health != null, "spawned normal enemy has a health bar"):
+		return
+	_check(not slime_health.visible, "undamaged enemy health bar starts hidden")
 	player.global_position = slime.global_position - Vector2(26, 0)
 	manager.refresh_activity(true)
 	Input.action_press("aim_right")
 	await _press_for("attack")
 	Input.action_release("aim_right")
 	_check(slime.health_current < slime.health_maximum, "left mouse attack damages a target")
+	var slime_progress: ProgressBar = slime_health.get_node("Bar")
+	_check(slime_health.visible and int(slime_progress.value) == slime.health_current and int(slime_progress.max_value) == slime.health_maximum, "enemy bar follows authoritative HP immediately")
 	await _press_for("dodge")
 	_check(player.dodge.cooldown_remaining() > 0.0 and player.dodge.is_invulnerable(), "dodge cooldown and invulnerability")
 	await _press_for("skill_1")
@@ -144,7 +164,7 @@ func _play_flow() -> void:
 	_check(pickups_before > 0, "enemies drop loot")
 	await _collect_pickups(plains)
 	_check(plains.profile.gold > 0, "gold pickup is collected")
-	player.global_position = Vector2(500, 580)
+	player.global_position = plains.find_interactable(&"plains_beacon").global_position
 	plains._update_nearest_interactable()
 	await _press_for("interact")
 	_check(plains.profile.activated_waypoints.has("plains_beacon"), "Green Plains waypoint activates")
@@ -172,6 +192,8 @@ func _play_flow() -> void:
 	player.weapons.advance(10.0)
 	player.weapons.attack(Vector2.RIGHT, player.combat_effects())
 	_check(captain_before_death.health_current < captain_before_death.health_maximum, "boss takes damage before player death")
+	plains.hud.bind_boss(captain_before_death)
+	_check(int(plains.hud._boss_hp.value) == captain_before_death.health_current and int(plains.hud._boss_hp.max_value) == captain_before_death.health_maximum, "boss HUD follows authoritative HP")
 	player.take_damage(9999)
 	_check(plains._respawning, "death starts respawn sequence")
 	await create_timer(0.75).timeout
@@ -181,7 +203,7 @@ func _play_flow() -> void:
 	if not _check(plains != null and plains.map_id == "green_plains" and plains.player != null, "death reloads Green Plains"):
 		return
 	player = plains.player
-	_check(player.global_position.distance_to(Vector2(500, 580)) < 36.0, "respawn uses activated waypoint")
+	_check(player.global_position.distance_to(plains.find_interactable(&"plains_beacon").global_position) < 1.0, "respawn uses moved activated waypoint")
 	_check(plains.profile.level >= 2 and plains.profile.gold > 0 and plains.profile.activated_waypoints.has("plains_beacon") and plains.profile.opened_chests.has("plains_treasure"), "death preserves progression")
 	var captain = _find_enemy(plains, &"goblin_captain")
 	if not _check(captain != null and captain.health_current == captain.health_maximum, "Captain resets at full HP"):
@@ -217,6 +239,14 @@ func _play_flow() -> void:
 	root.get_node("GameSession").save_progress(true)
 	_check(save_service.has_slot(TEST_SLOT), "completed character is saved")
 	print("Fractureborn play phase passed; reopen with -- reopen.")
+
+
+func _shift_placed_markers(node: Node) -> void:
+	if node.name == "VillageWorld":
+		node.get_node("PlayerSpawn").position += PLAYER_SPAWN_OFFSET
+	elif node.name == "GreenPlainsWorld":
+		node.get_node("EnemySpawns/SlimeNearPath").position += ENEMY_SPAWN_OFFSET
+		node.get_node("PlacedInteractables/plains_beacon").position += WAYPOINT_OFFSET
 
 
 func _verify_reopen() -> void:

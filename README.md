@@ -71,6 +71,10 @@ Profile scenarios, durations, metrics, and current verification status are in [`
 
 `docs/ASSET_REQUESTS.md` contains exact output paths, frame/canvas sizes, animation lists, pivots, collision expectations, pixel-art notes and ready-to-copy prompts. Replace placeholder art through shared `Texture2D` resources; gameplay collision and movement do not depend on sprite dimensions.
 
+## Editor workflow
+
+The UI and map composition are editor-authored. See [`docs/EDITOR_WORKFLOW.md`](docs/EDITOR_WORKFLOW.md) for moving HUD panels, painting TileMapLayer terrain, moving enemy spawn markers, and repositioning NPCs, chests, waypoints, props, and map transitions without changing gameplay scripts.
+
 ## Validation status
 
 Godot 4.7.2 imported and launched the project on macOS. The logic runner passed progression, cooldown, party scaling, inventory, save migration, quest, waypoint, guaranteed loot, boss stagger/root geometry, projectile pooling, and enemy activation checks. The playable-flow runner completed the quest/combat/respawn/save sequence and loaded the same character in a second Godot process. It uses mapped input actions for movement, attack, dodge, Q/E/R, 1/2, F, Tab, Esc, and potion use, and checks that an enemy melee hit damages the player; repeated boss attacks are accelerated by the runner. A rendered macOS profile sampled 60 FPS after warmup through 180 seconds of repeated combat; see the measured limits in the performance report. The macOS desktop session was locked during final checks, so a human-paced GUI playthrough and visual combat feel remain unverified. Windows, integrated graphics, and exact 1920×1080 performance also remain unverified.

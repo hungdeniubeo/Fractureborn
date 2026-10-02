@@ -1,9 +1,7 @@
 extends Node2D
 class_name WorldBase
 
-const TileFactory = preload("res://scripts/world/map_tile_factory.gd")
 const WorldChunk = preload("res://scripts/world/world_chunk.gd")
-const DecorationLayer = preload("res://scripts/world/world_decoration_layer.gd")
 const Interactable = preload("res://scripts/world/interactable.gd")
 const LootPickup = preload("res://scripts/world/loot_pickup.gd")
 const WaypointManager = preload("res://scripts/world/waypoint_manager.gd")
@@ -22,16 +20,15 @@ const PUZZLE_SEQUENCE: Array[StringName] = [&"dawn", &"sun", &"leaf"]
 
 var map_id := "village"
 var map_size := Vector2i(1024, 768)
-var map_theme: StringName = &"village"
-var spawn_position := Vector2(320, 384)
 var profile
 var player: PlayerController
 var projectile_pool: ProjectilePool
 var enemy_manager: EnemyManager
 var waypoint_manager: WaypointManager
 var hud
-var tile_layer: TileMapLayer
-var decoration_layer: DecorationLayer
+@onready var tile_layer: TileMapLayer = $GroundTiles
+@onready var player_spawn: Marker2D = $PlayerSpawn
+@onready var placed_interactables: Node2D = $PlacedInteractables
 var interactables: Array[Interactable] = []
 var bosses: Array[BossController] = []
 var chunks: Dictionary = {}
@@ -53,10 +50,10 @@ func _ready() -> void:
 	if profile.hp <= 0:
 		profile.hp = profile.max_hp
 	_configure_map()
-	_create_tile_layer()
-	_create_decoration_layer()
+	map_size = tile_layer.get_used_rect().size * TILE_SIZE
 	_create_chunks()
 	_populate_environment()
+	_register_placed_interactables()
 	_create_gameplay_services()
 	_spawn_player()
 	if map_id == "green_plains":
@@ -103,22 +100,24 @@ func _populate_content() -> void:
 	pass
 
 
-func _create_tile_layer() -> void:
-	tile_layer = TileMapLayer.new()
-	tile_layer.name = "GroundTiles"
-	tile_layer.position = Vector2.ZERO
-	add_child(tile_layer)
-	TileFactory.populate(tile_layer, map_size, map_theme, Callable(self, "_tile_at"))
+func _register_placed_interactables() -> void:
+	for node in placed_interactables.get_children():
+		var interactable := node as Interactable
+		if interactable == null:
+			continue
+		if interactable.kind == &"chest" and profile.opened_chests.has(String(interactable.interactable_id)):
+			interactable.data["opened"] = true
+			interactable.display_name = "Opened chest"
+			interactable.queue_redraw()
+		interactables.append(interactable)
+		interactable.reparent(_chunk_at(interactable.global_position), true)
 
 
-func _tile_at(cell_x: int, cell_y: int) -> int:
-	return 1 if (cell_x * 3 + cell_y * 5) % 7 == 0 else 0
-
-
-func _create_decoration_layer() -> void:
-	decoration_layer = DecorationLayer.new()
-	decoration_layer.name = "StaticDecorations"
-	add_child(decoration_layer)
+func find_interactable(interactable_id: StringName) -> Interactable:
+	for interactable in interactables:
+		if interactable.interactable_id == interactable_id:
+			return interactable
+	return null
 
 
 func _create_chunks() -> void:
@@ -150,11 +149,8 @@ func _spawn_player() -> void:
 	player = PlayerController.new()
 	player.name = "Player"
 	player.configure(profile, self, enemy_manager, projectile_pool)
-	var saved_waypoint: Dictionary = WaypointManager.WAYPOINTS.get(profile.last_waypoint, {})
-	if profile.activated_waypoints.has(profile.last_waypoint) and saved_waypoint.get("map", "") == map_id:
-		player.position = saved_waypoint.position
-	else:
-		player.position = spawn_position
+	var saved_waypoint := find_interactable(StringName(profile.last_waypoint))
+	player.position = saved_waypoint.global_position if saved_waypoint != null and profile.activated_waypoints.has(profile.last_waypoint) else player_spawn.global_position
 	player.defeated.connect(_on_player_defeated)
 	player.stats_changed.connect(_on_player_stats_changed)
 	player.inventory_changed.connect(_on_inventory_changed)
@@ -170,28 +166,20 @@ func _spawn_player() -> void:
 	camera.enabled = true
 	player.add_child(camera)
 	enemy_manager.configure(player)
-	waypoint_manager.configure(player, profile)
+	waypoint_manager.configure(player, profile, self)
 
 
 func _create_hud() -> void:
-	var hud_script = load("res://scripts/ui/hud.gd")
-	hud = hud_script.new()
-	hud.name = "HUD"
+	hud = preload("res://scenes/ui/hud.tscn").instantiate()
 	hud.configure(player, self)
 	add_child(hud)
 	GameSession.message_requested.connect(hud.show_message)
 
 
 func _create_fade_overlay() -> void:
-	var layer := CanvasLayer.new()
-	layer.layer = 100
-	layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	var layer := preload("res://scenes/ui/death_fade.tscn").instantiate()
 	add_child(layer)
-	_fade_overlay = ColorRect.new()
-	_fade_overlay.color = Color(0.015, 0.025, 0.04, 0.0)
-	_fade_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_fade_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(_fade_overlay)
+	_fade_overlay = layer.get_node("Fade")
 
 
 func _refresh_chunk_activity(force: bool = false) -> void:
@@ -205,20 +193,6 @@ func _refresh_chunk_activity(force: bool = false) -> void:
 	for chunk: WorldChunk in chunks.values():
 		chunk.set_active(chunk.distance_squared_to(player.global_position) <= activation_distance_squared)
 	enemy_manager.refresh_activity(true)
-
-
-func add_interactable(interactable_id: StringName, label: String, kind: StringName, position: Vector2, data: Dictionary = {}) -> Interactable:
-	var interactable := Interactable.new()
-	interactable.name = "Interactable_%s" % interactable_id
-	interactable.configure(interactable_id, label, kind, data)
-	if kind == &"chest" and profile.opened_chests.has(String(interactable_id)):
-		interactable.data["opened"] = true
-		interactable.display_name = "Empty Chest"
-		interactable.queue_redraw()
-	_chunk_at(position).add_child(interactable)
-	interactable.global_position = position
-	interactables.append(interactable)
-	return interactable
 
 
 func add_obstacle(position: Vector2, size: Vector2, node_name: String = "Obstacle") -> StaticBody2D:
@@ -236,10 +210,6 @@ func add_obstacle(position: Vector2, size: Vector2, node_name: String = "Obstacl
 	return body
 
 
-func add_village_sign(position: Vector2, color: Color) -> void:
-	decoration_layer.add_sign(position, color)
-
-
 func add_world_bounds() -> void:
 	add_obstacle(Vector2(map_size.x * 0.5, -24), Vector2(map_size.x, 48), "NorthBounds")
 	add_obstacle(Vector2(map_size.x * 0.5, map_size.y + 24), Vector2(map_size.x, 48), "SouthBounds")
@@ -249,21 +219,20 @@ func add_world_bounds() -> void:
 
 func spawn_enemy(enemy_id: StringName, position: Vector2) -> EnemyController:
 	var definition := EnemyCatalog.get_definition(enemy_id)
-	if definition == null:
+	var actor_scene := EnemyCatalog.get_scene(enemy_id)
+	if definition == null or actor_scene == null:
 		return null
 	var is_boss := enemy_id == &"goblin_captain" or enemy_id == &"ancient_treant"
 	if is_boss and profile.defeated_bosses.has(String(enemy_id)):
 		return null
-	var enemy: EnemyController
+	var enemy := actor_scene.instantiate() as EnemyController
 	if is_boss:
-		var boss := BossController.new()
+		var boss := enemy as BossController
 		boss.configure_boss(definition, enemy_id, player, projectile_pool, enemy_manager, GameSession.player_count)
 		boss.summon_requested.connect(_on_boss_summon_requested)
 		boss.boss_defeated.connect(_on_boss_defeated)
 		bosses.append(boss)
-		enemy = boss
 	else:
-		enemy = EnemyController.new()
 		enemy.configure(definition, player, projectile_pool, enemy_manager, GameSession.player_count)
 	enemy.name = "Enemy_%s_%d" % [enemy_id, randi()]
 	_chunk_at(position).add_child(enemy)

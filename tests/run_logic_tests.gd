@@ -43,6 +43,9 @@ func _run_tests() -> void:
 	_test_deterministic_loot_selection()
 	_test_guaranteed_loot_selection()
 	_test_boss_stagger_and_phase_patterns()
+	_test_normal_enemy_health_bar_tracks_authoritative_health()
+	_test_editor_authored_ui_layouts()
+	_test_editor_authored_maps()
 	_test_projectile_pool_reuses_and_expires_objects()
 	_test_enemy_activation_radius()
 	if _failures > 0:
@@ -53,10 +56,11 @@ func _run_tests() -> void:
 		quit(0)
 
 
-func _expect(condition: bool) -> void:
+func _expect(condition: bool, description: String = "") -> bool:
 	if not condition:
 		_failures += 1
-		push_error("Logic check failed.")
+		push_error("Logic check failed: %s" % description)
+	return condition
 
 
 func _test_progression_and_level_cap() -> void:
@@ -223,6 +227,66 @@ func _test_boss_stagger_and_phase_patterns() -> void:
 	treant.queue_free()
 	manager.queue_free()
 	target.queue_free()
+
+
+func _test_normal_enemy_health_bar_tracks_authoritative_health() -> void:
+	var scene_path := "res://scenes/enemies/common_enemy.tscn"
+	if not ResourceLoader.exists(scene_path):
+		_expect(false, "normal enemy scene and health bar exist")
+		return
+	var enemy: EnemyController = load(scene_path).instantiate()
+	enemy.configure(EnemyCatalog.get_definition(&"slime"), null, null, null, 2)
+	root.add_child(enemy)
+	var display: Control = enemy.get_node_or_null("HealthBar")
+	if not _expect(display != null, "enemy has an editor-authored health bar"):
+		enemy.queue_free()
+		return
+	var bar: ProgressBar = display.get_node_or_null("Bar")
+	if not _expect(bar != null, "health display has a ProgressBar"):
+		enemy.queue_free()
+		return
+	_expect(not display.visible, "full-health enemy bar begins hidden")
+	enemy.take_damage(7)
+	_expect(display.visible, "damage shows the enemy bar immediately")
+	_expect(int(bar.max_value) == enemy.health_maximum, "bar uses scaled authoritative maximum")
+	_expect(int(bar.value) == enemy.health_current, "bar uses authoritative current health")
+	enemy.take_damage(enemy.health_current)
+	_expect(not display.visible, "death hides the enemy bar immediately")
+	enemy.queue_free()
+
+
+func _test_editor_authored_ui_layouts() -> void:
+	var layouts := [
+		{"path": "res://scenes/ui/save_select.tscn", "nodes": ["Background", "Center/Frame/NameRow/NameInput", "Center/Frame/SlotCards/Slot1/Content/ActionButton"]},
+		{"path": "res://scenes/ui/hud.tscn", "nodes": ["Screen/StatusPanel/Stats/HpBar", "Screen/BossPanel/Content/Health", "Screen/InventoryPanel", "Screen/PauseMenu", "Screen/DebugOverlay"]},
+		{"path": "res://scenes/ui/inventory_panel.tscn", "nodes": ["Frame/Columns/Pack/Items", "Frame/Columns/MapColumn/MapPanel"]},
+		{"path": "res://scenes/ui/pause_menu.tscn", "nodes": ["Frame/Buttons/QuitButton"]},
+		{"path": "res://scenes/ui/debug_overlay.tscn", "nodes": ["Panel/Label"]},
+	]
+	for layout in layouts:
+		var path: String = layout["path"]
+		if not ResourceLoader.exists(path):
+			_expect(false, "editor-authored UI scene exists: " + path)
+			continue
+		var scene: PackedScene = load(path)
+		var instance := scene.instantiate()
+		for node_path in layout["nodes"]:
+			_expect(instance.get_node_or_null(NodePath(node_path)) != null, "UI node is editable: %s/%s" % [path, node_path])
+		instance.free()
+
+
+func _test_editor_authored_maps() -> void:
+	for map_path in ["res://scenes/world/village_world.tscn", "res://scenes/world/green_plains_world.tscn"]:
+		var scene: PackedScene = load(map_path)
+		var map: Node2D = scene.instantiate()
+		var ground := map.get_node_or_null("GroundTiles") as TileMapLayer
+		_expect(ground != null and ground.tile_set != null and ground.get_used_cells().size() > 0, "map has paintable editor tiles: " + map_path)
+		_expect(map.get_node_or_null("PlayerSpawn") is Marker2D, "map has movable player spawn: " + map_path)
+		_expect(map.get_node_or_null("PlacedInteractables") != null, "map has placed interactions: " + map_path)
+		if map_path.contains("green_plains"):
+			var spawns := map.get_node_or_null("EnemySpawns")
+			_expect(spawns != null and spawns.get_child_count() >= 9, "Green Plains has editable enemy spawn markers")
+		map.free()
 
 
 func _test_projectile_pool_reuses_and_expires_objects() -> void:

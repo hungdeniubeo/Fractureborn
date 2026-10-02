@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_trunk"]
+radius = 11.0
+
+[node name="Tree" type="StaticBody2D"]
+collision_layer = 16
+collision_mask = 0
+
+[node name="Trunk" type="Polygon2D" parent="."]
+color = Color(0.37, 0.255, 0.18, 1)
+polygon = PackedVector2Array(-5, -16, 5, -16, 5, 7, -5, 7)
+
+[node name="Canopy" type="Polygon2D" parent="."]
+color = Color(0.18, 0.51, 0.3, 1)
+polygon = PackedVector2Array(-16, -36, -8, -48, 9, -49, 19, -36, 17, -23, 7, -16, -11, -18, -19, -27)
+
+[node name="TrunkCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 10)
+shape = SubResource("CircleShape2D_trunk")

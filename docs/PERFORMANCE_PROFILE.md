@@ -60,3 +60,16 @@ desktop to locate any perceptible spikes and verify visual smoothness.
 The 1920x1080 target, Windows, integrated graphics, lower-end PCs, and a full
 human-paced GUI playthrough remain unverified. Re-run the checklist above on
 those targets before treating the cross-platform 60 FPS goal as established.
+
+## Editor-authored map follow-up
+
+After moving the ground and placed objects into the map scenes, the quick
+headless profile was rerun on macOS with Godot 4.7.2. It reported 60 FPS in
+Plains exploration, several-enemy, stress, both boss, boss-projectile, and
+repeated-combat samples. Those samples reached 18 active enemies, 7 pooled
+projectiles, and 332 nodes, with at most 5.38 ms physics and 4.75 ms process
+time. Village startup included the expected short headless/import spike
+(44.1 FPS mean over the two-second sample and one 84.12 ms process sample);
+the longer warmed-up village measurement above remains the representative
+idle result. This quick check does not change the unverified Windows,
+integrated-GPU, 1920x1080, or human-paced playtest status.

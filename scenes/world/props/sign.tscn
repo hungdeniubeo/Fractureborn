@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[node name="Sign" type="Node2D"]
+
+[node name="Post" type="Polygon2D" parent="."]
+color = Color(0.36, 0.25, 0.18, 1)
+polygon = PackedVector2Array(-3, -5, 3, -5, 3, 16, -3, 16)
+
+[node name="Board" type="Polygon2D" parent="."]
+color = Color(0.78, 0.55, 0.35, 1)
+polygon = PackedVector2Array(-18, -23, 18, -23, 18, -5, -18, -5)

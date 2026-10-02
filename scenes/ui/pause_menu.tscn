@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_frame"]
+bg_color = Color(0.145, 0.204, 0.263, 1)
+border_color = Color(0.388, 0.482, 0.533, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+
+[node name="PauseMenu" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+process_mode = 3
+mouse_filter = 0
+script = ExtResource("1")
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.025, 0.04, 0.82)
+
+[node name="Frame" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 340.0
+offset_top = 88.0
+offset_right = 620.0
+offset_bottom = 452.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
+
+[node name="Buttons" type="VBoxContainer" parent="Frame"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Frame/Buttons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Frame/Buttons"]
+custom_minimum_size = Vector2(244, 42)
+layout_mode = 2
+text = "Resume  [Esc]"
+
+[node name="SlotsButton" type="Button" parent="Frame/Buttons"]
+custom_minimum_size = Vector2(244, 42)
+layout_mode = 2
+text = "Save and return to slots"
+
+[node name="QuitButton" type="Button" parent="Frame/Buttons"]
+custom_minimum_size = Vector2(244, 42)
+layout_mode = 2
+text = "Save and quit"
+
+[node name="VSyncButton" type="Button" parent="Frame/Buttons"]
+custom_minimum_size = Vector2(244, 42)
+layout_mode = 2
+text = "Toggle VSync"
+
+[node name="FullscreenButton" type="Button" parent="Frame/Buttons"]
+custom_minimum_size = Vector2(244, 42)
+layout_mode = 2
+text = "Toggle fullscreen"

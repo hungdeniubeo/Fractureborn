@@ -3,20 +3,26 @@ class_name MapPanel
 
 var player: PlayerController
 var world: WorldBase
-var _refresh_timer: Timer
+var _path_cells: Array[Vector2i] = []
+var _clearing_cells: Array[Vector2i] = []
+@onready var _refresh_timer: Timer = $RefreshTimer
 
 
 func configure(owner: PlayerController, game_world: WorldBase) -> void:
 	player = owner
 	world = game_world
+	_path_cells.clear()
+	_clearing_cells.clear()
+	for cell in world.tile_layer.get_used_cells():
+		var tile := world.tile_layer.get_cell_atlas_coords(cell).x
+		if tile == 2:
+			_path_cells.append(cell)
+		elif tile == 3:
+			_clearing_cells.append(cell)
 
 
 func _ready() -> void:
-	custom_minimum_size = Vector2(220, 330)
-	_refresh_timer = Timer.new()
-	_refresh_timer.wait_time = 0.12
 	_refresh_timer.timeout.connect(queue_redraw)
-	add_child(_refresh_timer)
 
 
 func set_tracking_enabled(enabled: bool) -> void:
@@ -37,21 +43,22 @@ func _draw() -> void:
 	draw_rect(rect, Color("607c88"), false, 2.0)
 	var inner := Rect2(Vector2(10, 10), size - Vector2(20, 20))
 	draw_rect(inner, Color("4e9254"))
-	if world.map_id == "green_plains":
-		var previous := _map_point(Vector2(0, 588), inner)
-		for index in range(1, 24):
-			var x := float(world.map_size.x) * float(index) / 23.0
-			var y := 18.0 + sin(x * 0.09) * 3.5
-			var current := _map_point(Vector2(x, y * 32.0), inner)
-			draw_line(previous, current, Color("c2a06e"), 5.0)
-			previous = current
-		_draw_marker(Vector2(1000, 722), inner, Color("c76659"), "C")
-		_draw_marker(Vector2(1450, 835), inner, Color("e2c981"), "T")
-		_draw_marker(Vector2(900, 282), inner, Color("dea65d"), "*")
-	else:
-		draw_line(_map_point(Vector2(220, 384), inner), _map_point(Vector2(930, 384), inner), Color("c2a06e"), 7.0)
-		_draw_marker(Vector2(382, 338), inner, Color("81c9dc"), "!")
-	_draw_marker(Vector2(500 if world.map_id == "green_plains" else 310, 580 if world.map_id == "green_plains" else 492), inner, Color("a8a3ec"), "W")
+	var mini_tile_size := inner.size / Vector2(world.tile_layer.get_used_rect().size)
+	for cell in _path_cells:
+		draw_rect(Rect2(inner.position + Vector2(cell) * mini_tile_size, mini_tile_size), Color("c2a06e"))
+	for cell in _clearing_cells:
+		draw_rect(Rect2(inner.position + Vector2(cell) * mini_tile_size, mini_tile_size), Color("86b36a"))
+	for interactable in world.interactables:
+		match interactable.kind:
+			&"quest_npc": _draw_marker(interactable.global_position, inner, Color("81c9dc"), "!")
+			&"waypoint": _draw_marker(interactable.global_position, inner, Color("a8a3ec"), "W")
+			&"chest": _draw_marker(interactable.global_position, inner, Color("dea65d"), "*")
+	if world.has_node("EnemySpawns"):
+		for marker in world.get_node("EnemySpawns").get_children():
+			if marker.enemy_id == &"goblin_captain":
+				_draw_marker(marker.global_position, inner, Color("c76659"), "C")
+			elif marker.enemy_id == &"ancient_treant":
+				_draw_marker(marker.global_position, inner, Color("e2c981"), "T")
 	var player_map := _map_point(player.global_position, inner)
 	draw_circle(player_map, 6.0, Color.WHITE)
 	draw_circle(player_map, 3.0, Color("526fca"))

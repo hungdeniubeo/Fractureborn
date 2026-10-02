@@ -40,7 +40,7 @@ Controller actions are defined in `scripts/core/input_actions.gd`; controller fe
 | Area | Primary files and responsibility |
 | --- | --- |
 | Boot, profile, disk saves | `scenes/ui/save_select.tscn`, `scripts/ui/save_select.gd`, `scripts/core/game_session.gd`, `scripts/save/character_profile.gd`, `scripts/save/save_service.gd`: slot selection, session state, versioned serialization, debounced writes. |
-| Maps and checkpoints | `scenes/world/*.tscn`, `scripts/world/world_base.gd`, `world_chunk.gd`, `waypoint_manager.gd`, `map_tile_factory.gd`: scene transitions, tile terrain, nearby chunks, waystones, respawn. |
+| Maps and checkpoints | `scenes/world/*.tscn`, `data/world/*_tileset.tres`, `scripts/world/world_base.gd`, `world_chunk.gd`, `waypoint_manager.gd`: editor-authored TileMapLayer terrain, placed actors/spawn markers, scene transitions, nearby chunks, waystones, respawn. |
 | Player and combat | `scripts/player/player_controller.gd`, `scripts/combat/{health_component,dodge_component,weapon_controller,projectile_pool}.gd`: input, health, invulnerability, weapon attacks, projectile reuse. |
 | Skills and progression | `scripts/skills/{skill_controller,skill_definition}.gd`, `scripts/core/{progression,race_data,difficulty_scaler}.gd`: cooldown skills, levels, race IDs, centralized party scaling. |
 | Enemies and bosses | `scripts/enemies/{enemy_controller,enemy_activation_manager,boss_controller}.gd`, `data/enemies/`: shared enemy behavior, AI activation, telegraphed boss patterns and stagger. |
@@ -63,7 +63,7 @@ The rendered macOS profile used a 30-second warmup for each scenario at an actua
 
 - Native manual game-feel, boss balance, pause-menu Save & Quit, and controller play have not been tested end to end. The automated flow is evidence for system behavior, not a substitute for that pass.
 - Windows, integrated GPUs, low/mid-range PCs, and exactly 1920x1080 have not been tested. This run used an Apple M4 and a macOS-constrained 1920x962 window.
-- Characters, enemies, bosses, tiles, icons, and VFX use procedural or placeholder visuals. [ASSET_REQUESTS.md](ASSET_REQUESTS.md) specifies replacement visual assets and generation prompts. Authored music/SFX and an audio asset handoff are not present yet.
+- Characters, enemies, bosses, props, icons, and VFX use procedural or placeholder visuals; map composition and UI layout are editor-authored. [ASSET_REQUESTS.md](ASSET_REQUESTS.md) specifies replacement visual assets and generation prompts. Authored music/SFX and an audio asset handoff are not present yet.
 - Online co-op, companions, PvP, other playable races, full Level 50 skill evolution, additional biomes, crafting, procedural generation, and optional waypoint fast travel are intentionally deferred.
 
 ## Phase 1 definition of done

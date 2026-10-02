@@ -43,11 +43,14 @@ func _ready() -> void:
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	collision_layer = ENEMY_LAYER
 	collision_mask = PLAYER_LAYER | WORLD_LAYER
-	var shape_node := CollisionShape2D.new()
+	var shape_node := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape_node == null:
+		shape_node = CollisionShape2D.new()
+		shape_node.name = "CollisionShape2D"
+		add_child(shape_node)
 	var shape := CircleShape2D.new()
 	shape.radius = 11.0 * definition.visual_scale
 	shape_node.shape = shape
-	add_child(shape_node)
 	_rng.randomize()
 	_next_attack_ms = Time.get_ticks_msec() + 300
 	queue_redraw()

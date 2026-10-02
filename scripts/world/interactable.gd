@@ -1,10 +1,14 @@
+@tool
 extends Area2D
 class_name Interactable
 
-var interactable_id: StringName
-var display_name := "Interact"
-var kind: StringName
-var data: Dictionary = {}
+@export var interactable_id: StringName
+@export var display_name := "Interact"
+@export var kind: StringName:
+	set(value):
+		kind = value
+		queue_redraw()
+@export var data: Dictionary = {}
 var enabled := true
 
 
@@ -20,11 +24,13 @@ func _ready() -> void:
 	collision_layer = 1 << 5
 	collision_mask = 1
 	monitoring = true
-	var shape_node := CollisionShape2D.new()
-	var shape := CircleShape2D.new()
-	shape.radius = 52.0
-	shape_node.shape = shape
-	add_child(shape_node)
+	if get_node_or_null("InteractionShape") == null:
+		var shape_node := CollisionShape2D.new()
+		shape_node.name = "InteractionShape"
+		var shape := CircleShape2D.new()
+		shape.radius = 52.0
+		shape_node.shape = shape
+		add_child(shape_node)
 
 
 func set_world_active(active: bool) -> void:
