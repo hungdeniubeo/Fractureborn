@@ -1,0 +1,52 @@
+name: Feature request
+description: Suggest a focused improvement for Fractureborn
+title: "[Feature] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep proposals focused on a clear player or development problem. Large systems may need to be discussed and split into smaller steps.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What problem would this feature solve, or what part of the experience would it improve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the feature or improvement you have in mind.
+    validations:
+      required: true
+
+  - type: textarea
+    id: player_value
+    attributes:
+      label: Player / project value
+      description: Why would this be useful for the current vertical slice or the project's next phase?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and alternatives
+      description: Note any smaller version, alternative approach, dependencies, or known trade-offs.
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References or mockups
+      description: Add sketches, screenshots, examples, or other context if useful.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I checked that this is not already covered by an existing issue.
+          required: true
