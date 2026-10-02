@@ -24,7 +24,7 @@ The playable-flow runner uses `user://tests/flow_characters/slot_3.json`, so it 
 
 ## Play the slice
 
-Create or continue a Human character in one of the three slots. Speak to Archivist Edda in Central Village, then take the eastern gate into Green Plains. Defeat five common monsters, activate the Plains waystone, and fight the Goblin Captain followed by the Ancient Treant. Return through the western gate and speak to Edda for the quest reward. Open the pause menu with Esc to save and quit; use Continue in the same slot after restarting. The rune stones, hidden path, and chest are optional exploration on this route.
+Create or continue a Human character in one of the three slots. Speak to Archivist Edda in Central Village, then take the eastern gate into Green Plains. Defeat five common monsters, activate the Plains waystone, and fight the Goblin Captain followed by the Ancient Treant. The Captain always drops an Iron Sword; pick it up and equip it from the pack if desired. Return through the western gate and speak to Edda for the quest reward. Open the pause menu with Esc to save and quit; use Continue in the same slot after restarting. The rune stones, hidden path, and chest are optional exploration on this route.
 
 ## Current slice
 
@@ -33,7 +33,7 @@ Create or continue a Human character in one of the three slots. Speak to Archivi
 - One saved quest chain, two healing/respawn waypoints, gold/material/weapon loot, inventory and health potions.
 - Level progression through 50, tuned for early levels; Human Sword Art, Weapon Focus, and Battle Instinct use cooldowns.
 - Training Sword, Iron Sword, Wooden Bow, Basic Pistol, and Basic Shotgun.
-- Slime, Goblin, Goblin Archer, Goblin Captain, and three-phase Ancient Treant.
+- Slime, Goblin, Goblin Archer, Goblin Captain, and three-phase Ancient Treant with a phase-two three-root pattern.
 - Death fade, nearest activated waypoint respawn, and boss reset on a fresh encounter.
 - Pixel-art-style runtime placeholders. No copyrighted game assets are used.
 
@@ -73,7 +73,7 @@ Profile scenarios, durations, metrics, and current verification status are in [`
 
 ## Validation status
 
-Godot 4.7.2 imported and launched the project on macOS. The logic runner passed its progression, cooldown, party scaling, inventory, save migration, quest, waypoint, loot, pool, and enemy activation checks. The playable-flow runner passed the complete quest/combat/respawn/save sequence and loaded the same saved character in a second Godot process. It uses mapped input actions for movement, attack, dodge, Q/E/R, 1/2, F, Tab, Esc, and health potion use; repeated boss attacks are accelerated by the runner. The macOS desktop session was locked during final checks, so a human-paced GUI playthrough and visual combat feel remain unverified. Windows, integrated graphics, and exact 1920×1080 performance also remain unverified.
+Godot 4.7.2 imported and launched the project on macOS. The logic runner passed progression, cooldown, party scaling, inventory, save migration, quest, waypoint, guaranteed loot, boss stagger/root geometry, projectile pooling, and enemy activation checks. The playable-flow runner completed the quest/combat/respawn/save sequence and loaded the same character in a second Godot process. It uses mapped input actions for movement, attack, dodge, Q/E/R, 1/2, F, Tab, Esc, and potion use, and checks that an enemy melee hit damages the player; repeated boss attacks are accelerated by the runner. A rendered macOS profile sampled 60 FPS after warmup through 180 seconds of repeated combat; see the measured limits in the performance report. The macOS desktop session was locked during final checks, so a human-paced GUI playthrough and visual combat feel remain unverified. Windows, integrated graphics, and exact 1920×1080 performance also remain unverified.
 
 ## Next phase
 

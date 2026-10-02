@@ -120,6 +120,20 @@ Perspective: top-down 3/4. Palette: moss green, dark bark, pale amber heart-knot
 
 Prompt: `Draw an original transparent 960x480 pixel-art boss sheet for Fractureborn's Ancient Treant, an old guardian with layered bark plates, fern crown, pale amber heart-knot, and long branch arms. Use a 10-column by 5-row grid of exact 96x96 cells in row-major order. First 16 frames: idle 4 each facing down, left, right, up. Next 34 frames: root telegraph 3, root strike 5, slam telegraph 3, slam 6, summon 5, stagger 4, defeat 8, facing down so the game can aim the attacks. Pivot x=48 y=79 in every frame. Show increasing leaf glow and branch posture in phase poses, crisp clusters, limited palette, no antialiasing, no text, fully original design.`
 
+## Boss Ground Warnings
+
+Purpose: replace the geometric root, slam, and summon warning rings while keeping their hit areas readable. The Ancient Treant's phase-two three-root attack reuses the root mark at three positions.
+
+Output filename: `boss_ground_warnings.png`
+
+Destination folder: `res://assets/vfx/`
+
+Destination: `res://assets/vfx/boss_ground_warnings.png`
+
+Canvas: `256x384`; frame size: `128x128`; total: 6 frames in two columns and three rows. Animations: root warning 2 frames in row 1, slam warning 2 frames in row 2, summon warning 2 frames in row 3. Directions: none; all marks are radial. Perspective: top-down ground projection. Palette: earthy red-orange for danger, muted leaf-green for summons, with clear contrast on grass. Transparency: required. Pivot: center `(64, 64)`. Collision: none; gameplay code retains separate exact hit geometry and scales the art to match the warning radius.
+
+Prompt: `Create an original transparent 256x384 pixel-art ground-warning sheet for Fractureborn's Ancient Treant. Use exact 128x128 cells in two columns and three rows. Row 1: two subtle animation frames of a cracked red-orange root circle; row 2: two frames of a heavier bark-and-dust slam ring; row 3: two frames of a muted leaf-green summoning circle. All rings are centered at x=64 y=64 and fully visible inside their cells. Top-down ground projection, sparse readable pixel clusters, high contrast on bright grass, no antialiasing, no bloom, no text, no copied symbols, transparent outside the marks. The game reuses the root circle three times for its phase-two root pattern.`
+
 ## Human Skill Effects and Waystone
 
 Purpose: replace the gameplay effect placeholders with local sprite-sheet animations.

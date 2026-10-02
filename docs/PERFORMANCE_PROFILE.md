@@ -26,37 +26,36 @@ or objects that keep processing outside the active area. Profile both a normal
 build and a debug build; do not use the overlay's readings as a substitute for
 the profiler or treat a single machine as proof for both platforms.
 
-## Measured macOS run
+## Measured macOS run, 2026-10-02
 
 Godot 4.7.2 stable, Compatibility renderer (OpenGL 4.1 Metal), macOS 26.5,
 Apple M4 with 16 GB RAM. The rendered game window measured `1920x962`; macOS
 constrained its height below the requested 1080 pixels. The run used
 `--profiling` and Godot `Performance` monitors, a 30-second warmup per scenario,
-and a three-minute repeated-combat segment. These monitor samples are not a
-captured editor Profiler timeline. The desktop was locked, so no human-paced
-combat or visual inspection was possible during this run.
+and a three-minute repeated-combat segment after the boss warning and loot
+changes. These monitor samples are not a captured editor Profiler timeline.
+The desktop was locked, so no human-paced GUI combat was possible; offscreen
+Godot viewport captures were inspected separately.
 
 | Scenario | Sample duration | FPS mean / lowest sample | Max active enemies / projectiles | Max nodes | Highest sampled process / physics ms |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Village idle | 15 s | 60.1 / 59 | 0 / 0 | 144 | 7.75 / 1.33 |
-| Plains exploration | 15 s | 60.0 / 60 | 5 / 1 | 198 | 12.03 / 12.55 |
-| Several enemies | 15 s | 60.0 / 60 | 8 / 1 | 198 | 8.39 / 1.46 |
-| Phase 1 stress | 20 s | 60.0 / 60 | 18 / 1 | 218 | 15.40 / 1.82 |
-| Goblin Captain | 15 s | 60.0 / 59 | 18 / 2 | 218 | 6.13 / 2.10 |
-| Ancient Treant | 20 s | 59.9 / 58 | 18 / 2 | 218 | 7.83 / 12.24 |
-| Boss and projectiles | 20 s | 60.0 / 59 | 22 / 6 | 228 | 25.82 / 12.13 |
-| Repeated combat | 180 s | 60.0 / 60 | 21 / 6 | 224 | 18.13 / 25.55 |
+| Village idle | 15 s | 60.0 / 60 | 0 / 0 | 144 | 11.56 / 1.19 |
+| Plains exploration | 15 s | 60.0 / 60 | 5 / 1 | 198 | 10.18 / 1.53 |
+| Several enemies | 15 s | 60.0 / 60 | 8 / 1 | 198 | 19.40 / 1.59 |
+| Phase 1 stress | 20 s | 60.0 / 59 | 18 / 1 | 218 | 12.84 / 1.72 |
+| Goblin Captain | 15 s | 60.0 / 60 | 18 / 2 | 218 | 8.05 / 1.72 |
+| Ancient Treant | 20 s | 60.0 / 60 | 18 / 2 | 218 | 10.93 / 1.78 |
+| Boss and projectiles | 20 s | 60.0 / 60 | 22 / 5 | 228 | 17.35 / 3.84 |
+| Repeated combat | 180 s | 60.0 / 60 | 21 / 8 | 224 | 12.87 / 3.69 |
 
 Static memory was 37.4 MB in the village, 38.4 MB in normal Plains play, and
-38.7 MB at both the start and end of repeated combat. No Godot errors appeared
-in the corrected full run. The highest sampled process and physics values show
-isolated frames over the 16.67 ms budget; the FPS monitor samples did not show
-a sustained slowdown. Use the editor Profiler on an unlocked desktop to locate
-those spikes and verify visual smoothness.
-
-After the camera-boundary and HUD positioning adjustment, a short rendered
-follow-up still sampled 60 FPS in the 17-enemy stress and boss/projectile
-scenarios, with no Godot errors.
+38.7 MB at the start and 38.8 MB at the end of repeated combat. No Godot errors
+appeared in the full run. The highest sampled process values include isolated
+frames over the 16.67 ms budget; the FPS monitor samples did not show a
+sustained slowdown. A rapid smoke profile with only 0.5 seconds of warmup
+sampled 19 FPS and 115.65 ms process time in the initial village seconds,
+which needs an unlocked desktop feel check. Use the editor Profiler on that
+desktop to locate any perceptible spikes and verify visual smoothness.
 
 The 1920x1080 target, Windows, integrated graphics, lower-end PCs, and a full
 human-paced GUI playthrough remain unverified. Re-run the checklist above on
