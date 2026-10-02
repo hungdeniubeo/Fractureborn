@@ -1,46 +1,72 @@
 # Fractureborn
 
-Fractureborn is an original top-down pixel-art action RPG. This repository contains its first small solo vertical slice, built with Godot 4.7.2 stable and GDScript.
+**Fractureborn** is an original top-down pixel-art action RPG built with Godot 4 and GDScript.
 
-## Run
+The project is currently in early development. Its first playable vertical slice focuses on responsive combat, exploration, character progression, loot, quests, save/load support, boss encounters, and a lightweight architecture designed to scale beyond the prototype.
 
-1. Install Godot 4.7.2 stable.
-2. Open `project.godot` in the Godot Project Manager and let the project import.
-3. Run the project (F6/F5 or the play button). It opens at the three character slots.
+> Current development branch: [`feat/vertical-slice`](https://github.com/hungdeniubeo/Fractureborn/tree/feat/vertical-slice)
 
-From a terminal:
+## Project status
 
-```sh
-godot --path .
-godot --headless --path . --editor --quit
-godot --headless --path . --script tests/run_logic_tests.gd
-godot --headless --path . --script tests/run_playable_flow.gd
-godot --headless --path . --script tests/run_playable_flow.gd -- reopen
-godot --path . --profiling --script tests/run_performance_profile.gd -- windowed
-```
+**Phase 1 — Playable vertical slice**
 
-Saves are stored under `user://characters/slot_1.json` through `slot_3.json`; graphics settings are stored in `user://settings.json`.
-The playable-flow runner uses `user://tests/flow_characters/slot_3.json`, so it does not write to normal character slots. Run its play phase before its reopen phase.
+The current build contains a complete small gameplay loop:
 
-## Play the slice
+1. Create or continue a Human character from one of three save slots.
+2. Speak with Archivist Edda in Central Village.
+3. Travel through the eastern gate into Green Plains.
+4. Fight common enemies and activate the Plains waystone.
+5. Defeat the Goblin Captain and Ancient Treant bosses.
+6. Collect and equip loot, including the Captain's guaranteed Iron Sword drop.
+7. Return to the village and complete the quest.
+8. Save, quit, and continue the same character later.
 
-Create or continue a Human character in one of the three slots. Speak to Archivist Edda in Central Village, then take the eastern gate into Green Plains. Defeat five common monsters, activate the Plains waystone, and fight the Goblin Captain followed by the Ancient Treant. The Captain always drops an Iron Sword; pick it up and equip it from the pack if desired. Return through the western gate and speak to Edda for the quest reward. Open the pause menu with Esc to save and quit; use Continue in the same slot after restarting. The rune stones, hidden path, and chest are optional exploration on this route.
+Optional exploration includes rune stones, a hidden path, and a chest.
 
-## Current slice
+## Current features
 
-- Three separate Human character slots with versioned JSON profiles.
-- Central Village and connected Green Plains scenes with TileMapLayer terrain, simple obstacles, camps, a hidden rune path/chest, and a return route.
-- One saved quest chain, two healing/respawn waypoints, gold/material/weapon loot, inventory and health potions.
-- Level progression through 50, tuned for early levels; Human Sword Art, Weapon Focus, and Battle Instinct use cooldowns.
+### Combat
+
+- Real-time top-down movement and aiming.
+- Melee and ranged weapon support.
+- Dodge movement.
+- Human Sword Art, Weapon Focus, and Battle Instinct abilities with cooldowns.
+- Enemy melee and projectile attacks.
+- Boss encounters with multiple combat phases.
+- Death fade and waypoint-based respawning.
+
+### Progression and equipment
+
+- Character progression up to level 50, tuned around the early-game slice.
+- Three separate versioned character save slots.
+- Gold, materials, weapons, health potions, and inventory management.
 - Training Sword, Iron Sword, Wooden Bow, Basic Pistol, and Basic Shotgun.
-- Slime, Goblin, Goblin Archer, Goblin Captain, and three-phase Ancient Treant with a phase-two three-root pattern.
-- Death fade, nearest activated waypoint respawn, and boss reset on a fresh encounter.
-- Pixel-art-style runtime placeholders. No copyrighted game assets are used.
+- Weapon swapping and equipment support.
+
+### World and enemies
+
+- Central Village and connected Green Plains maps.
+- TileMapLayer-based terrain and world layout.
+- Camps, obstacles, hidden exploration content, and return routes.
+- Slime, Goblin, Goblin Archer, and Goblin Captain enemies.
+- Three-phase Ancient Treant boss encounter.
+- Two healing and respawn waypoints.
+
+### Systems
+
+- Saved quest progression.
+- Persistent character profiles and graphics settings.
+- Bounded projectile pooling.
+- Distance-based enemy activation and sleeping.
+- Chunk-aware world processing.
+- Signal-driven HUD updates.
+- Debug performance overlay.
+- Automated logic and playable-flow validation runners.
 
 ## Controls
 
 | Action | Keyboard / mouse | Default controller action |
-|---|---|---|
+| --- | --- | --- |
 | Move | WASD | Left stick |
 | Aim | Mouse | Right stick |
 | Attack | Left mouse | Right trigger |
@@ -53,30 +79,140 @@ Create or continue a Human character in one of the three slots. Speak to Archivi
 | Pack and map | Tab | Back / View |
 | Health potion | H | A / south face button |
 | Pause | Esc | Start |
-| Performance overlay | F3 (debug builds only) | — |
+| Performance overlay | F3 | Debug builds only |
 
-The controller bindings are default InputMap actions and can be remapped in Godot. Human skills have no mana or energy cost.
+Controller bindings are defined through Godot's InputMap and can be remapped. Human skills currently have no mana or energy cost.
 
-## Performance structure
+## Tech stack
 
-Repeated ground uses one shared atlas-backed TileMapLayer per map. Static decoration is drawn by a shared layer; only obstacles and interactive objects need separate nodes. Map scenes are separate and partitioned into 512-pixel chunks. Nearby chunks stay active; distant interactables sleep and distant enemies disable visibility, physics and AI. Enemy decisions tick at 5 Hz while their movement physics runs only inside the active radius.
+| Area | Technology |
+| --- | --- |
+| Engine | Godot 4.7.x |
+| Language | GDScript |
+| Rendering | GL Compatibility |
+| Game type | 2D top-down action RPG |
+| Art direction | Pixel-art style |
+| Base viewport | 960 × 540 |
+| Physics | 60 ticks per second |
+| Persistence | Versioned JSON save data |
 
-Each map owns a bounded projectile pool (12 warmed objects, at most 96). Projectiles have narrow player/enemy collision masks, a maximum lifetime and travel range. The HUD listens to gameplay signals; its cooldown text timer runs only while a cooldown is active. Save requests debounce for 0.35 seconds and immediate saves happen at checkpoints, transitions, boss/quest progression, and quit.
+The project currently uses runtime and pixel-art-style placeholder assets while the final art direction is being developed. No copyrighted game assets are used by the current vertical slice.
 
-The F3 overlay is hidden unless explicitly enabled in a debug build. It reports FPS, nearby active enemies, active/total projectiles, gameplay-node count, process/physics time and static memory. Shared graphics settings include VSync, frame limit, fullscreen/window size, particles, shake, lighting, damage numbers and post-processing intensity; costly post-processing is off by default.
+## Run locally
 
-Profile scenarios, durations, metrics, and current verification status are in [`docs/PERFORMANCE_PROFILE.md`](docs/PERFORMANCE_PROFILE.md).
+### Requirements
 
-## Art handoff
+- Godot 4.7.x. The current vertical slice was developed and validated with Godot 4.7.2 stable.
+- Git.
 
-`docs/ASSET_REQUESTS.md` contains exact output paths, frame/canvas sizes, animation lists, pivots, collision expectations, pixel-art notes and ready-to-copy prompts. Replace placeholder art through shared `Texture2D` resources; gameplay collision and movement do not depend on sprite dimensions.
+### Clone
 
-## Validation status
+```bash
+git clone https://github.com/hungdeniubeo/Fractureborn.git
+cd Fractureborn
+git switch feat/vertical-slice
+```
 
-Godot 4.7.2 imported and launched the project on macOS. The logic runner passed progression, cooldown, party scaling, inventory, save migration, quest, waypoint, guaranteed loot, boss stagger/root geometry, projectile pooling, and enemy activation checks. The playable-flow runner completed the quest/combat/respawn/save sequence and loaded the same character in a second Godot process. It uses mapped input actions for movement, attack, dodge, Q/E/R, 1/2, F, Tab, Esc, and potion use, and checks that an enemy melee hit damages the player; repeated boss attacks are accelerated by the runner. A rendered macOS profile sampled 60 FPS after warmup through 180 seconds of repeated combat; see the measured limits in the performance report. The macOS desktop session was locked during final checks, so a human-paced GUI playthrough and visual combat feel remain unverified. Windows, integrated graphics, and exact 1920×1080 performance also remain unverified.
+Open `project.godot` in Godot and run the project with **F6/F5** or the editor Play button.
 
-## Next phase
+From a terminal:
 
-See [docs/PHASE1_HANDOFF.md](docs/PHASE1_HANDOFF.md) for the verified Phase 1 flow, requirement-by-requirement status, known limits, and review handoff.
+```bash
+godot --path .
+```
 
-Run a human-paced balance and feel pass on an unlocked macOS or Windows desktop, then profile an integrated-graphics PC at 1920×1080. Replace the highest-impact Human, enemy, boss, and world placeholders using the asset requests before expanding maps, races, or co-op.
+## Validation
+
+The project includes headless logic and playable-flow checks.
+
+```bash
+godot --headless --path . --editor --quit
+godot --headless --path . --script tests/run_logic_tests.gd
+godot --headless --path . --script tests/run_playable_flow.gd
+godot --headless --path . --script tests/run_playable_flow.gd -- reopen
+```
+
+For a rendered performance profile:
+
+```bash
+godot --path . --profiling --script tests/run_performance_profile.gd -- windowed
+```
+
+The current macOS validation covers progression, cooldowns, inventory, save migration, quests, waypoints, loot, boss behavior, projectile pooling, enemy activation, combat damage, respawn, and save/reload flow.
+
+A rendered macOS profile maintained 60 FPS after warmup during the existing repeated-combat profile. Human-paced visual feel, Windows behavior, integrated-graphics performance, and exact 1920×1080 profiling still need broader manual validation.
+
+## Save data
+
+Normal character saves are stored under:
+
+```text
+user://characters/slot_1.json
+user://characters/slot_2.json
+user://characters/slot_3.json
+```
+
+Graphics settings are stored in:
+
+```text
+user://settings.json
+```
+
+The automated playable-flow runner uses its own test save path and does not overwrite the normal character slots.
+
+## Performance approach
+
+The vertical slice already includes several systems intended to keep runtime cost predictable as the project grows:
+
+- Shared atlas-backed TileMapLayer ground rendering.
+- Separate map scenes partitioned into logical chunks.
+- Distance-based sleeping for enemies and interactable objects.
+- Enemy decision ticks separated from movement physics.
+- Bounded projectile pools with maximum lifetime and travel range.
+- Signal-driven HUD updates instead of unnecessary continuous polling.
+- Debounced save requests with immediate saves for important progression events.
+
+Detailed profiling notes are available in [`docs/PERFORMANCE_PROFILE.md`](docs/PERFORMANCE_PROFILE.md).
+
+## Project structure
+
+```text
+Fractureborn/
+├── assets/        # Characters, bosses, enemies, world, UI, weapons, VFX
+├── data/          # Game data and configuration resources
+├── docs/          # Handoff, asset requests, profiling and design notes
+├── scenes/        # Godot scenes and maps
+├── scripts/       # Gameplay, systems, UI, save and core logic
+├── tests/         # Logic, playable-flow and performance runners
+├── project.godot
+└── README.md
+```
+
+## Documentation
+
+- [`docs/PHASE1_HANDOFF.md`](docs/PHASE1_HANDOFF.md) — Phase 1 flow, requirement status, known limits, and review handoff.
+- [`docs/PERFORMANCE_PROFILE.md`](docs/PERFORMANCE_PROFILE.md) — performance scenarios, measurements, limits, and verification notes.
+- [`docs/ASSET_REQUESTS.md`](docs/ASSET_REQUESTS.md) — asset requirements, animation lists, dimensions, pivots, collision expectations, and art handoff notes.
+
+## Roadmap
+
+The immediate direction after the vertical slice is to strengthen the existing foundation before expanding scope:
+
+- Complete a human-paced combat and balance pass.
+- Improve enemy and boss health/feedback presentation.
+- Validate the build on Windows and integrated graphics hardware.
+- Replace the highest-impact placeholder character, enemy, boss, world, UI, and VFX assets.
+- Continue improving animation and combat feel.
+- Expand maps, content, races, and larger systems only after the core loop is stable.
+
+The roadmap intentionally prioritizes polish and validation over adding large amounts of content too early.
+
+## Contributing
+
+Development is still early and the project is primarily being built as a focused game project. Bug reports and focused improvements are welcome.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for setup, branch, validation, and contribution guidelines.
+
+## License
+
+This repository does not currently include an explicit open-source license. Source code and project assets should not be assumed to be licensed for redistribution or reuse unless a license is added later.
